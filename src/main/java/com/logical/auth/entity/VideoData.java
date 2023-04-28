@@ -1,0 +1,49 @@
+package com.logical.auth.entity;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.logical.auth.enums.VideoType;
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+import java.util.Date;
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+@Entity(name="video")
+public class VideoData {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    int videoId;
+    // @OneToMany
+    long userId;
+    //  @OneToMany
+
+
+
+
+    String userName;
+
+
+
+
+
+    int categoryId;
+    String videoTitle;
+    String description;
+    String tag;
+    VideoType videoType;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+    private Date uploadDate;
+    public String videoUrl;
+    public String thumbNailUrl;
+    public long totalViews;
+    public long totalLikes;
+    public boolean likeStatus;
+    public boolean downloadStatus;
+    public boolean subscribeStatus;
+    public String userProfileUrl;
+
+}
