@@ -22,6 +22,7 @@ import java.util.concurrent.ExecutionException;
 public class VideoController {
     @Autowired
     VideoService videoService;
+//    just for test
     private Logger logger = LogManager.getLogger(VideoController.class);
     @PostMapping("/uploadVideo")
     public ResponseEntity<?> uploadVideo(@RequestParam(name="videoFile",required = false) MultipartFile videoFile, @RequestParam(name="thumbFile",required = false) MultipartFile thumbFile,@RequestPart(name = "userId",required =true)Long userId,@RequestPart(name = "categoryId",required =true)int categoryId,@RequestPart(name = "videoTitle",required =false)String videoTitle,@RequestPart(name = "description",required =false)String description,@RequestPart(name = "tag",required =false)String tag,@RequestPart(name = "videoType",required =false) VideoType videoType) throws IOException {
