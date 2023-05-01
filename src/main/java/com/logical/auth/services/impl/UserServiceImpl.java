@@ -214,6 +214,13 @@ public class UserServiceImpl implements UserService {
     public ResponseEntity<?> deleteUser(Long userId) {
         if (userId > 0) {
             if (userRepository.existsById(userId)) {
+                UserData userData = userRepository.findById(userId).get();
+                String profileImgUrl = userData.getProfileImgUrl();
+                if(!profileImgUrl.isEmpty()) {
+                    String s = fileService.deleteFile(profileImgUrl);
+                    System.out.println("Profile Url " + s);
+                }
+
                 userRepository.deleteById(userId);
                 return new ResponseEntity<>(new MessageResponse(true, "User deleted successfully "), HttpStatus.OK);
             } else {
@@ -257,8 +264,7 @@ public class UserServiceImpl implements UserService {
     public ResponseEntity<?> verifyOtp(int otp){
         if (verifyOtp==otp) {
             verifyOtp=0;
-            UserData userData=userRepository.getByEmail(email)
-                    ;
+            UserData userData=userRepository.getByEmail(email);
             String subject = "Your forgot password ";
             String message = "Forget password ="+userData.getPassword();
             String to = email;

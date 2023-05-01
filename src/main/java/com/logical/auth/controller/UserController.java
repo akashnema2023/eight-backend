@@ -65,6 +65,7 @@ public class UserController {
             return new ResponseEntity<>(new MessageResponse(false,"Something went wrong...Don't very we are figuring out what went wrong...!"),HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
     @PostMapping("/updateUserProfile")
     public ResponseEntity<?>updateUserProfile(@RequestParam(name="profileImg",required = false) MultipartFile profileImg, @RequestParam(name="backgroundImg",required = false) MultipartFile backgroundImg,@RequestPart(name = "userId",required =true)Long userId,@RequestPart(name = "firstName",required =false)String firstName,@RequestPart(name = "description",required =false)String description){
         //@RequestPart("updateUserRequest") UpdateUserRequest updateUserRequest, @RequestParam(name = "userId",required =true,defaultValue ="0")Long userId)throws IOException {
@@ -75,8 +76,8 @@ public class UserController {
             logger.info(" "+e);
             return new ResponseEntity<>(new MessageResponse(false,"Something went wrong...Don't very we are figuring out what went wrong...!"),HttpStatus.INTERNAL_SERVER_ERROR);
         }
-    }    @PostMapping("/changePassword")
-
+    }
+    @PostMapping("/changePassword")
     public ResponseEntity<?> updatePassword(@RequestBody UpdatePasswordRequest updatePasswordRequest){
         try {
               return userService.updatePassword(updatePasswordRequest);

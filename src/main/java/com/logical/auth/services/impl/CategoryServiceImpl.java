@@ -1,10 +1,12 @@
 package com.logical.auth.services.impl;
 
 import com.logical.auth.entity.CategoryData;
+import com.logical.auth.entity.SubCategory;
 import com.logical.auth.model.response.ListCategoryResponse;
 import com.logical.auth.model.response.MessageResponse;
 import com.logical.auth.model.response.UpdateCategoryResponse;
 import com.logical.auth.repository.CategoryRepo;
+import com.logical.auth.repository.SubCategoryRepo;
 import com.logical.auth.services.FileService;
 
 import com.logical.auth.services.StorageServices;
@@ -28,6 +30,9 @@ public class CategoryServiceImpl {
     ModelMapper modelMapper;
 //    @Autowired(required = true)
 //FileService fileService;
+
+    @Autowired
+    SubCategoryRepo subCategoryRepo;
 
     @Autowired
     StorageServices fileService;
@@ -84,7 +89,25 @@ public class CategoryServiceImpl {
     public ResponseEntity<?> deleteCategory(int categoryId) {
         if (categoryId > 0) {
             if (categoryRepo.existsById(categoryId)) {
+                CategoryData categoryData = categoryRepo.findById(categoryId).get();
+                String categoryImageUrl = categoryData.getCategoryImageUrl();
+                if(!categoryImageUrl.isEmpty()) {
+                    fileService.deleteFile(categoryImageUrl);
+                }
                 categoryRepo.deleteById(categoryId);
+//                subCategoryRepo.deleteSubCategoryByCategoryId(categoryId);
+
+                List<SubCategory> byCategoryId = subCategoryRepo.findByCategoryId(categoryId);
+                if(!byCategoryId.isEmpty()) {
+                    for (SubCategory subCategory : byCategoryId) {
+                        int subCategoryId = subCategory.getSubCategoryId();
+                        String subCategoryImgUrl = subCategory.getSubCategoryImgUrl();
+                        if(!subCategoryImgUrl.isEmpty()){
+                            fileService.deleteFile(subCategoryImgUrl);
+                        }
+                        subCategoryRepo.deleteById(subCategoryId);
+                    }
+                }
                 return new ResponseEntity<>(new MessageResponse(true, "Category deleted successfully "), HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(new MessageResponse(false, "Category does not exist with this categoryId !"), HttpStatus.NOT_FOUND);

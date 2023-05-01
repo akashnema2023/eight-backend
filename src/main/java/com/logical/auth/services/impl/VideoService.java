@@ -44,6 +44,9 @@ public class VideoService {
     @Autowired
     CategoryServiceImpl categoryService;
 
+    @Autowired
+    SubCategoryRepo subCategoryRepo;
+
     //    @Autowired
 //    FileService fileService;
     @Value("${project.videos}")
@@ -60,7 +63,7 @@ public class VideoService {
     @Autowired
     NotificationRepo notificationRepo;
 
-    public ResponseEntity<?> uploadVideo(MultipartFile videoFile, MultipartFile thumbFile, Long userId, int categoryId, String videoTitle, String description, String tag, VideoType videoType) throws IOException, ExecutionException, InterruptedException {
+    public ResponseEntity<?> uploadVideo(MultipartFile videoFile, MultipartFile thumbFile, Long userId, int categoryId,int subCategoryId, String videoTitle, String description, String tag, VideoType videoType) throws IOException, ExecutionException, InterruptedException {
 
 
         if (userId > 0) {
@@ -80,6 +83,10 @@ public class VideoService {
 
                             videoData.setUserName(userData.getFirstName()+" "+userData.getLastName());
                             videoData.setCategoryId(categoryId);
+
+                            videoData.setSubCategoryId(subCategoryId);
+
+
                             videoData.setDescription(description);
                             videoData.setTag(tag);
                             videoData.setVideoTitle(videoTitle);
@@ -199,6 +206,15 @@ public class VideoService {
                 VideoData videoData = videoRepository.findById(videoId).get();
 //                UserData userData=userRepository.findById(videoData.getUserId()).get();
 //                userData.setTotalUploadedVideos((userData.getTotalUploadedVideos())-1);
+                String videoUrl = videoData.getVideoUrl();
+                String thumbNailUrl = videoData.getThumbNailUrl();
+                if(!videoUrl.isEmpty()) {
+                    String s = fileService.deleteFile(videoUrl);
+                }
+                if(!thumbNailUrl.isEmpty()) {
+                    String s1 = fileService.deleteFile(thumbNailUrl);
+                }
+
                 videoRepository.deleteById(videoId);
                 return new ResponseEntity<>(new MessageResponse(true, "Video deleted successfully with this videoId...! "), HttpStatus.OK);
             } else {
@@ -225,6 +241,20 @@ public class VideoService {
     public ResponseEntity<?> getListVideosByCategoryId(int categoryId) {
         if (categoryId > 0) {
             List<VideoData> videoList = videoRepository.getVideosByCategoryId(categoryId);
+            Collections.reverse(videoList);
+            if (videoList.isEmpty()) {
+                return new ResponseEntity<>(new MessageResponse(false, "Videos does not exist with categoryId...!"), HttpStatus.NOT_FOUND);
+            } else {
+                return new ResponseEntity<>(new VideosListResponse(true, "Success", videoList), HttpStatus.OK);
+            }
+        } else {
+            return new ResponseEntity<>(new MessageResponse(false, "Please provide valid categoryId "), HttpStatus.NOT_ACCEPTABLE);
+        }
+    }
+
+    public ResponseEntity<?> getListVideosBySubCategoryId(int subCategoryId) {
+        if (subCategoryId > 0) {
+            List<VideoData> videoList = videoRepository.findBySubCategoryId(subCategoryId);
             Collections.reverse(videoList);
             if (videoList.isEmpty()) {
                 return new ResponseEntity<>(new MessageResponse(false, "Videos does not exist with categoryId...!"), HttpStatus.NOT_FOUND);
@@ -517,7 +547,9 @@ public class VideoService {
                         if (historyData != null) {
                             return new ResponseEntity<>(new MessageResponse(false, "Already in history"), HttpStatus.BAD_REQUEST);
                         } else {
-                            HistoryData historyData1 = new HistoryData(videoId, userId, videoData.getVideoUrl());
+                            UserData userData = userRepository.findById(userId).get();
+                            String username=userData.getFirstName()+" "+userData.getLastName();
+                            HistoryData historyData1 = new HistoryData(videoId, userId,username,videoData.getVideoUrl());
                             hisoryRepo.save(historyData1);
                             return new ResponseEntity<>(new MessageResponse(true, "Video added in history"), HttpStatus.OK);
                         }
@@ -632,6 +664,10 @@ public class VideoService {
 //        }
 //        return new ResponseEntity<>(new ListOfVideosAccordingToCategory1(true, "Success", map2), HttpStatus.OK);
 //
+//    }
+
+//    public ResponseEntity<?> getListVideosByCategoryId(int categoryId){
+//            subCategoryRepo.
 //    }
 
     public ResponseEntity<?> getVideoLikesByUserId(long userid) {

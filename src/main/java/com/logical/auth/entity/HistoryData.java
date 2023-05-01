@@ -17,10 +17,13 @@ public class HistoryData {
     private int videoId;
     @Column(name="user_Id")
     private long userId;
+    @Column(name = "username")
+    private String userName;
     private String videoUrl;
-    public HistoryData(int videoId, long userId,String videoUrl) {
+    public HistoryData(int videoId, long userId,String userName,String videoUrl) {
         this.videoId = videoId;
         this.userId = userId;
+        this.userName=userName;
         this.setVideoUrl(videoUrl);
     }
 }

@@ -20,17 +20,9 @@ public class VideoData {
     // @OneToMany
     long userId;
     //  @OneToMany
-
-
-
-
     String userName;
-
-
-
-
-
     int categoryId;
+    int subCategoryId;
     String videoTitle;
     String description;
     String tag;

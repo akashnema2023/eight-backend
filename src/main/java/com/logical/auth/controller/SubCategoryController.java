@@ -48,12 +48,29 @@ public class SubCategoryController {
         }
     }
 
-    public ResponseEntity updateSubCategory(@RequestParam("subCategoryId")int subId){
-        if(subId>0){
-            return subCategoryImp.updateSubCategory(subId);
+    @GetMapping("/getSubCategoryByCategoryId")
+    public ResponseEntity findSubCategoryByCategoryId(@RequestParam(name = "categoryId",required = true)int categoryId){
+        if(categoryId>0){
+            return subCategoryImp.getSubCategoryByCategoryId(categoryId);
+        }else {
+            return new ResponseEntity(new MessageResponse(false,"Provide Valid Category Id!!"),HttpStatus.NOT_ACCEPTABLE);
+        }
+    }
+
+
+
+    @PostMapping("/updateSubCategory")
+    public ResponseEntity updateSubCategory(@RequestParam(name="subCategoryId")int subCategoryId,@RequestParam(name="categoryId")int categoryId,@RequestParam(name="subCategoryName")String subCategoryName,@RequestParam(name = "file") MultipartFile file){
+        if(subCategoryId>0){
+            return subCategoryImp.updateSubCategory(subCategoryId,categoryId,subCategoryName,file);
         }else{
             return new ResponseEntity(new MessageResponse(false,"Provide valid Id!!"),HttpStatus.OK);
         }
+    }
+
+    @GetMapping("/testdelete")
+    public String deleteTest(@RequestParam(name = "delete")String url){
+       return subCategoryImp.deletefiletest(url);
     }
 
 

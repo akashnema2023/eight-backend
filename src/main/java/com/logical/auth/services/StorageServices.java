@@ -1,6 +1,7 @@
 package com.logical.auth.services;
 
 import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.services.s3.model.S3ObjectInputStream;
@@ -56,10 +57,17 @@ public class StorageServices{
     }
 
 
-    public String deleteFile(String fileName) {
+    public String deleteFile(String fileUrl) {
+        String fileName = fileUrl.substring(fileUrl.lastIndexOf("com/")+4);
         s3Client.deleteObject(bucketName, fileName);
         return fileName + " removed ...";
     }
+
+//    public String deleteFileFromS3Bucket(String fileUrl) {
+//        String fileName = fileUrl.substring(fileUrl.lastIndexOf("com/")+1);
+//        s3Client.deleteObject(new DeleteObjectRequest(bucketName + "/", fileName));
+//        return "Successfully deleted "+fileName;
+//    }
 
 
     private File convertMultiPartFileToFile(MultipartFile file) {

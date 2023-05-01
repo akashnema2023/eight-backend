@@ -22,12 +22,11 @@ import java.util.concurrent.ExecutionException;
 public class VideoController {
     @Autowired
     VideoService videoService;
-//    just for test
     private Logger logger = LogManager.getLogger(VideoController.class);
     @PostMapping("/uploadVideo")
-    public ResponseEntity<?> uploadVideo(@RequestParam(name="videoFile",required = false) MultipartFile videoFile, @RequestParam(name="thumbFile",required = false) MultipartFile thumbFile,@RequestPart(name = "userId",required =true)Long userId,@RequestPart(name = "categoryId",required =true)int categoryId,@RequestPart(name = "videoTitle",required =false)String videoTitle,@RequestPart(name = "description",required =false)String description,@RequestPart(name = "tag",required =false)String tag,@RequestPart(name = "videoType",required =false) VideoType videoType) throws IOException {
+    public ResponseEntity<?> uploadVideo(@RequestParam(name="videoFile",required = false) MultipartFile videoFile, @RequestParam(name="thumbFile",required = false) MultipartFile thumbFile,@RequestPart(name = "userId",required =true)Long userId,@RequestPart(name = "categoryId",required =true)int categoryId,@RequestParam(name = "subCategoryId",required = true)int subCategoryId,@RequestPart(name = "videoTitle",required =false)String videoTitle,@RequestPart(name = "description",required =false)String description,@RequestPart(name = "tag",required =false)String tag,@RequestPart(name = "videoType",required =false) VideoType videoType) throws IOException {
         try {
-            return videoService.uploadVideo(videoFile, thumbFile,userId,categoryId,videoTitle,description,tag,videoType);
+            return videoService.uploadVideo(videoFile, thumbFile,userId,categoryId,subCategoryId,videoTitle,description,tag,videoType);
         }
         catch(UncheckedIOException e1){
             logger.info(" "+e1);
@@ -95,6 +94,15 @@ public class VideoController {
         }catch (Exception e) {
             logger.info(" "+e);
              return new ResponseEntity<>(new MessageResponse( false,"Something went wrong...!"), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    @GetMapping("/getAllVideosBySubCategoryId")
+    public ResponseEntity<?>getListVideosBySubCategoryId(@RequestParam(name="subCategoryId",required = true) int subCategoryId){
+        try{
+            return videoService.getListVideosBySubCategoryId(subCategoryId);
+        }catch (Exception e) {
+            logger.info(" "+e);
+            return new ResponseEntity<>(new MessageResponse( false,"Something went wrong...!"), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
     @GetMapping("/getTotalLikes")

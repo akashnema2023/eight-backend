@@ -17,11 +17,13 @@ public interface SubCategoryRepo extends JpaRepository<SubCategory,Integer> {
     List<SubCategory> listOfSubCategoryByCategoryId(@RequestParam int categoryId);
 
 
-//    @Query("DELETE FROM sub_category c WHERE c.category_id LIKE %?1%")
-//    void deleteSubCategoriesByCategoryId(@RequestParam int categoryId);
+//    @Query(value = "DELETE FROM sub_category c WHERE c.category_id LIKE %?1%",nativeQuery = true)
+//    public void deleteSubCategoriesByCategoryId(@RequestParam int categoryId);
 
 
       List<SubCategory> findByCategoryId(int categoryId);
+
+//      public void deleteSubCategoryByCategoryId(int categoryId);
 
 //      List<SubCategory> findByCategoryName(String name);
 }
