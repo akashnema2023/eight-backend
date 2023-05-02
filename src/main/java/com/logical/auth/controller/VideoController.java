@@ -26,12 +26,13 @@ public class VideoController {
     VideoService videoService;
     private Logger logger = LogManager.getLogger(VideoController.class);
 
+
     @PostMapping("/uploadVideo")
     public ResponseEntity<?> uploadVideo(@RequestParam(name = "videoFile", required = false) MultipartFile videoFile, @RequestParam(name = "thumbFile", required = false) MultipartFile thumbFile, @RequestParam(name = "userId", required = true) Long userId, @RequestParam(name = "categoryId", required = true) int categoryId, @RequestParam(name = "subCategoryId", required = true) int subCategoryId, @RequestParam(name = "videoTitle", required = false) String videoTitle, @RequestParam(name = "description", required = false) String description, @RequestParam(name = "tag", required = false) String tag, @RequestParam(name = "videoType", required = false) VideoType videoType) throws IOException {
         try {
             return videoService.uploadVideo(videoFile, thumbFile, userId, categoryId, subCategoryId, videoTitle, description, tag, videoType);
         } catch (UncheckedIOException e1) {
-            logger.info(" " + e1);
+            logger.info("---- " + e1);
             return new ResponseEntity<>(new MessageResponse(false, "Something went wrong...Don't very we are figuring out what went wrong...!"), HttpStatus.INTERNAL_SERVER_ERROR);
         } catch (Exception e) {
             logger.info("-------------" + e);
