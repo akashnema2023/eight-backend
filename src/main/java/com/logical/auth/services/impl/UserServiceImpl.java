@@ -1,5 +1,7 @@
 package com.logical.auth.services.impl;
 
+import com.logical.auth.entity.VideoData;
+import com.logical.auth.repository.VideoRepository;
 import com.logical.auth.services.EmailService;
 import com.logical.auth.services.StorageServices;
 import com.logical.auth.entity.UserData;
@@ -20,6 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Random;
 
 
@@ -50,6 +53,11 @@ public class UserServiceImpl implements UserService {
     EmailService emailService;
     Random rand = new Random();
 
+    @Autowired
+    VideoRepository videoRepository;
+
+    @Autowired
+    VideoService videoService;
 
     @Override
     public ResponseEntity<?> signUp(SignUpRequest signUpRequest) {
@@ -59,8 +67,8 @@ public class UserServiceImpl implements UserService {
         Random rand = new Random();
         UserData user = this.modelMapper.map(signUpRequest, UserData.class);
         user.setEmail(signUpRequest.getEmail().toLowerCase());
-        user.setProfileImgUrl("https://seven02.s3.ap-south-1.amazonaws.com/defaultimg.jpg");
-        user.setBackgroundImgUrl("https://seven02.s3.ap-south-1.amazonaws.com/backgorundimg.jpg");
+//        user.setProfileImgUrl("https://seven02.s3.ap-south-1.amazonaws.com/defaultimg.jpg");
+//        user.setBackgroundImgUrl("https://seven02.s3.ap-south-1.amazonaws.com/backgorundimg.jpg");
         user.setTotalSubscriber(0);
         user.setTotalUploadedVideos(0);
         int resRandom = rand.nextInt((9999 - 100) + 1) + 10;
@@ -114,6 +122,10 @@ public class UserServiceImpl implements UserService {
 //                userData.setLastName(updateUserRequest.getLastName());
                 if (!backgroundImg.isEmpty()) {
 //                    userData.setBackgroundImgUrl(this.fileService.uploadFile(path, backgroundImg));
+                    String backgroundurl = userData.getBackgroundImgUrl();
+                    if (backgroundurl != null) {
+                        fileService.deleteFile(backgroundurl);
+                    }
                     userData.setBackgroundImgUrl(this.fileService.uploadFile(path, backgroundImg));
                     updateUserResponse.setBackgroundImg(userData.getBackgroundImgUrl());
                 } else {
@@ -121,13 +133,17 @@ public class UserServiceImpl implements UserService {
                 }
                 if (!profileImg.isEmpty()) {
 //                    userData.setProfileImgUrl(this.fileService.uploadFile(path, profileImg));
+                    String profileurl = userData.getProfileImgUrl();
+                    if (profileurl != null) {
+                        fileService.deleteFile(profileurl);
+                    }
                     userData.setProfileImgUrl(this.fileService.uploadFile(path, profileImg));
                     updateUserResponse.setProfileImgUrl(userData.getProfileImgUrl());
                 } else {
                     // userData.setProfileImgUrl("");
                     updateUserResponse.setProfileImgUrl(userData.getProfileImgUrl());
                 }
-                if (firstName.isEmpty()) {
+                if (firstName == null) {
                     //  userData.setFirstName(firstName);
                     updateUserResponse.setFirstName(userData.getFirstName());
                 } else {
@@ -167,7 +183,7 @@ public class UserServiceImpl implements UserService {
         if (userRepository.existsByEmail(emailId.toLowerCase())) {
 //            int otp = rand.nextInt((9999 - 100) + 1) + 10;
 //            String id = int.format("%04d", rand.nextInt(10000));
-            int otp=rand.nextInt(9999);
+            int otp = rand.nextInt(9999);
             verifyOtp = otp;
             email = emailId;
             String subject = " OTP from seven ";
@@ -216,11 +232,27 @@ public class UserServiceImpl implements UserService {
             if (userRepository.existsById(userId)) {
                 UserData userData = userRepository.findById(userId).get();
                 String profileImgUrl = userData.getProfileImgUrl();
-                if(!profileImgUrl.isEmpty()) {
-                    String s = fileService.deleteFile(profileImgUrl);
-                    System.out.println("Profile Url " + s);
+                if (!profileImgUrl.isEmpty()) {
+                    fileService.deleteFile(profileImgUrl);
                 }
-
+                List<VideoData> byUserId = videoRepository.findByUserId(userId);
+                if (!byUserId.isEmpty()) {
+                    for (VideoData videoData : byUserId) {
+                        int videoId = videoData.getVideoId();
+//                        String videoUrl = videoData.getVideoUrl();
+//                        String thumbNailUrl = videoData.getThumbNailUrl();
+//                        if (!videoUrl.isEmpty()) {
+//                            String s = fileService.deleteFile(videoUrl);
+//                            System.out.println(s);
+//                        }
+//                        if (!thumbNailUrl.isEmpty()) {
+//                            String s1 = fileService.deleteFile(thumbNailUrl);
+//                            System.out.println(s1);
+//                        }
+//                        videoRepository.deleteById(videoId);
+                        videoService.deleteVideo(videoId);
+                    }
+                }
                 userRepository.deleteById(userId);
                 return new ResponseEntity<>(new MessageResponse(true, "User deleted successfully "), HttpStatus.OK);
             } else {
@@ -236,7 +268,7 @@ public class UserServiceImpl implements UserService {
         if (userId > 0) {
             if (userRepository.existsById(userId)) {
                 ResponseCookie cookie = jwtUtils.getCleanJwtCookie();
-                UserData userData=userRepository.findById(userId).get();
+                UserData userData = userRepository.findById(userId).get();
                 userData.setActive(false);
                 userRepository.save(userData);
                 return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, cookie.toString())
@@ -261,17 +293,17 @@ public class UserServiceImpl implements UserService {
     }
 
 
-    public ResponseEntity<?> verifyOtp(int otp){
-        if (verifyOtp==otp) {
-            verifyOtp=0;
-            UserData userData=userRepository.getByEmail(email);
+    public ResponseEntity<?> verifyOtp(int otp) {
+        if (verifyOtp == otp) {
+            verifyOtp = 0;
+            UserData userData = userRepository.getByEmail(email);
             String subject = "Your forgot password ";
-            String message = "Forget password ="+userData.getPassword();
+            String message = "Forget password =" + userData.getPassword();
             String to = email;
             boolean flag = this.emailService.sendPasswordToEmail(subject, message, to);
             //boolean flag=true;
-            if (flag){
-                email="";
+            if (flag) {
+                email = "";
             }
             return new ResponseEntity<>(new MessageResponse(true, "OTP verify Successfully "), HttpStatus.OK);
         } else {

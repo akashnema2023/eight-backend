@@ -2,11 +2,13 @@ package com.logical.auth.services.impl;
 
 import com.logical.auth.entity.CategoryData;
 import com.logical.auth.entity.SubCategory;
+import com.logical.auth.entity.VideoData;
 import com.logical.auth.model.response.ListCategoryResponse;
 import com.logical.auth.model.response.MessageResponse;
 import com.logical.auth.model.response.UpdateCategoryResponse;
 import com.logical.auth.repository.CategoryRepo;
 import com.logical.auth.repository.SubCategoryRepo;
+import com.logical.auth.repository.VideoRepository;
 import com.logical.auth.services.FileService;
 
 import com.logical.auth.services.StorageServices;
@@ -35,18 +37,24 @@ public class CategoryServiceImpl {
     SubCategoryRepo subCategoryRepo;
 
     @Autowired
+    VideoRepository videoRepository;
+
+    @Autowired
+    VideoService videoService;
+    @Autowired
     StorageServices fileService;
 
-        @Value("${project.image}")
+    @Value("${project.image}")
     String path;
+
     public CategoryData createCategory(MultipartFile multipartFile, String categoryName, String colourCode) throws IOException {
         CategoryData categoryData = new CategoryData();
         categoryData.setCategoryName(categoryName);
 //        categoryData.setCategoryImageUrl(this.fileService.uploadFile(path,multipartFile));
         if (multipartFile.isEmpty()) {
-            categoryData.setCategoryImageUrl("https://seven02.s3.ap-south-1.amazonaws.com/defaultCategoryImage.png");
+//            categoryData.setCategoryImageUrl("https://seven02.s3.ap-south-1.amazonaws.com/defaultCategoryImage.png");
         } else {
-            categoryData.setCategoryImageUrl(this.fileService.uploadFile(path,multipartFile));
+            categoryData.setCategoryImageUrl(this.fileService.uploadFile(path, multipartFile));
         }
         categoryData.setColourCode(colourCode);
         categoryData = categoryRepo.save(categoryData);
@@ -91,19 +99,35 @@ public class CategoryServiceImpl {
             if (categoryRepo.existsById(categoryId)) {
                 CategoryData categoryData = categoryRepo.findById(categoryId).get();
                 String categoryImageUrl = categoryData.getCategoryImageUrl();
-                if(!categoryImageUrl.isEmpty()) {
+                if (!categoryImageUrl.isEmpty()) {
                     fileService.deleteFile(categoryImageUrl);
                 }
                 categoryRepo.deleteById(categoryId);
 //                subCategoryRepo.deleteSubCategoryByCategoryId(categoryId);
 
                 List<SubCategory> byCategoryId = subCategoryRepo.findByCategoryId(categoryId);
-                if(!byCategoryId.isEmpty()) {
+                if (!byCategoryId.isEmpty()) {
                     for (SubCategory subCategory : byCategoryId) {
                         int subCategoryId = subCategory.getSubCategoryId();
                         String subCategoryImgUrl = subCategory.getSubCategoryImgUrl();
-                        if(!subCategoryImgUrl.isEmpty()){
+                        if (!subCategoryImgUrl.isEmpty()) {
                             fileService.deleteFile(subCategoryImgUrl);
+                        }
+                        List<VideoData> bySubCategoryId = videoRepository.findBySubCategoryId(subCategoryId);
+                        if (!bySubCategoryId.isEmpty()) {
+                            for (VideoData videoData : bySubCategoryId) {
+                                int videoId = videoData.getVideoId();
+//                                String videoUrl = videoData.getVideoUrl();
+//                                String thumbNailUrl = videoData.getThumbNailUrl();
+//                                if (!videoUrl.isEmpty()) {
+//                                    fileService.deleteFile(videoUrl);
+//                                }
+//                                if (!thumbNailUrl.isEmpty()) {
+//                                    fileService.deleteFile(thumbNailUrl);
+//                                }
+//                                videoRepository.deleteById(videoId);
+                                videoService.deleteVideo(videoId);
+                            }
                         }
                         subCategoryRepo.deleteById(subCategoryId);
                     }
@@ -119,19 +143,28 @@ public class CategoryServiceImpl {
 
     //    @Override
     public ResponseEntity<?> updateCategory(int categoryId, MultipartFile multipartFile, String categoryName, String colourCode) throws IOException {
-        CategoryData olddata=new CategoryData();
+        CategoryData olddata = new CategoryData();
         if (categoryId > 0) {
             if (categoryRepo.existsById(categoryId)) {
                 CategoryData categoryData = categoryRepo.findById(categoryId).get();
-                categoryData.setCategoryName(categoryName);
+
+                if (categoryName.length() > 0) {
+                    categoryData.setCategoryName(categoryName);
+                }
 //                categoryData.setCategoryImageUrl(this.fileService.uploadFile(path, multipartFile));
                 if (!multipartFile.isEmpty()) {
-                    categoryData.setCategoryImageUrl(this.fileService.uploadFile(path,multipartFile));
-                }else{
+                    String categoryurl = categoryData.getCategoryImageUrl();
+                    if (categoryurl != null) {
+                        fileService.deleteFile(categoryurl);
+                    }
+                    categoryData.setCategoryImageUrl(this.fileService.uploadFile(path, multipartFile));
+                } else {
                     olddata.setCategoryImageUrl(categoryData.getCategoryImageUrl());
                 }
 
-                categoryData.setColourCode(colourCode);
+                if (colourCode.length() > 0) {
+                    categoryData.setColourCode(colourCode);
+                }
                 categoryRepo.save(categoryData);
                 UpdateCategoryResponse updateCategoryResponse = new UpdateCategoryResponse();
                 updateCategoryResponse.setCategoryName(categoryData.getCategoryName());

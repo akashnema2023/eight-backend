@@ -39,40 +39,39 @@ public class SubCategoryController {
         return subCategoryImp.showSubCategorywithPage();
 
     }
+
     @GetMapping("/deleteSubCategory")
-    public ResponseEntity deleteSubCategory(@RequestParam("subCategoryId")int subid){
-        if(subid>0) {
-            return subCategoryImp.deletesubCategoryById(subid);
-        }else {
-            return new ResponseEntity(new MessageResponse(false,"Provide valid Id!!"),HttpStatus.OK);
+    public ResponseEntity deleteSubCategory(@RequestParam("subCategoryId") int subid) {
+        if (subid > 0) {
+            return subCategoryImp.deleteSubCategoryById(subid);
+        } else {
+            return new ResponseEntity(new MessageResponse(false, "Provide valid Id!!"), HttpStatus.OK);
         }
     }
 
     @GetMapping("/getSubCategoryByCategoryId")
-    public ResponseEntity findSubCategoryByCategoryId(@RequestParam(name = "categoryId",required = true)int categoryId){
-        if(categoryId>0){
+    public ResponseEntity findSubCategoryByCategoryId(@RequestParam(name = "categoryId", required = true) int categoryId) {
+        if (categoryId > 0) {
             return subCategoryImp.getSubCategoryByCategoryId(categoryId);
-        }else {
-            return new ResponseEntity(new MessageResponse(false,"Provide Valid Category Id!!"),HttpStatus.NOT_ACCEPTABLE);
+        } else {
+            return new ResponseEntity(new MessageResponse(false, "Provide Valid Category Id!!"), HttpStatus.NOT_ACCEPTABLE);
         }
     }
 
 
-
     @PostMapping("/updateSubCategory")
-    public ResponseEntity updateSubCategory(@RequestParam(name="subCategoryId")int subCategoryId,@RequestParam(name="categoryId")int categoryId,@RequestParam(name="subCategoryName")String subCategoryName,@RequestParam(name = "file") MultipartFile file){
-        if(subCategoryId>0){
-            return subCategoryImp.updateSubCategory(subCategoryId,categoryId,subCategoryName,file);
-        }else{
-            return new ResponseEntity(new MessageResponse(false,"Provide valid Id!!"),HttpStatus.OK);
+    public ResponseEntity updateSubCategory(@RequestParam(name = "subCategoryId") int subCategoryId, @RequestParam(name = "categoryId") int categoryId, @RequestParam(name = "subCategoryName") String subCategoryName, @RequestParam(name = "file") MultipartFile file) {
+        if (subCategoryId > 0) {
+            return subCategoryImp.updateSubCategory(subCategoryId, categoryId, subCategoryName, file);
+        } else {
+            return new ResponseEntity(new MessageResponse(false, "Provide valid Id!!"), HttpStatus.OK);
         }
     }
 
     @GetMapping("/testdelete")
-    public String deleteTest(@RequestParam(name = "delete")String url){
-       return subCategoryImp.deletefiletest(url);
+    public String deleteTest(@RequestParam(name = "delete") String url) {
+        return subCategoryImp.deletefiletest(url);
     }
-
 
 
 }

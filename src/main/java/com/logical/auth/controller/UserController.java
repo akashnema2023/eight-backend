@@ -67,7 +67,7 @@ public class UserController {
     }
 
     @PostMapping("/updateUserProfile")
-    public ResponseEntity<?>updateUserProfile(@RequestParam(name="profileImg",required = false) MultipartFile profileImg, @RequestParam(name="backgroundImg",required = false) MultipartFile backgroundImg,@RequestPart(name = "userId",required =true)Long userId,@RequestPart(name = "firstName",required =false)String firstName,@RequestPart(name = "description",required =false)String description){
+    public ResponseEntity<?>updateUserProfile(@RequestParam(name="profileImg",required = false) MultipartFile profileImg, @RequestParam(name="backgroundImg",required = false) MultipartFile backgroundImg,@RequestParam(name = "userId",required =true)Long userId,@RequestParam(name = "firstName",required =false)String firstName,@RequestParam(name = "description",required =false)String description){
         //@RequestPart("updateUserRequest") UpdateUserRequest updateUserRequest, @RequestParam(name = "userId",required =true,defaultValue ="0")Long userId)throws IOException {
         try {
             return userService.updateUserData(profileImg,backgroundImg,userId,firstName,description);
@@ -135,7 +135,7 @@ public class UserController {
     }
 
     @GetMapping("/showUserImageByUserId")
-    public String showUserImageByUserId(@RequestPart(name = "userId",required = true)long userId){
+    public String showUserImageByUserId(@RequestParam(name = "userId",required = true)long userId){
         if(userId>0) {
             return userService.showUserImageByUserId(userId);
         }else{
@@ -145,7 +145,7 @@ public class UserController {
 
 
     @PostMapping("/verifyOTP")
-    public ResponseEntity<?> verifyOTP(@RequestPart(name = "otp", required = true) int otp) {
+    public ResponseEntity<?> verifyOTP(@RequestParam(name = "otp", required = true) int otp) {
         return userService.verifyOtp(otp);
     }
 

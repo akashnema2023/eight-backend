@@ -2,10 +2,12 @@ package com.logical.auth.services.impl;
 
 import com.logical.auth.entity.CategoryData;
 import com.logical.auth.entity.SubCategory;
+import com.logical.auth.entity.VideoData;
 import com.logical.auth.model.response.MessageResponse;
 import com.logical.auth.model.response.SubCategoryResponse;
 import com.logical.auth.repository.CategoryRepo;
 import com.logical.auth.repository.SubCategoryRepo;
+import com.logical.auth.repository.VideoRepository;
 import com.logical.auth.services.StorageServices;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -34,6 +36,11 @@ public class SubCategoryImp {
     StorageServices storageServices;
 
     @Autowired
+    VideoRepository videoRepository;
+
+    @Autowired
+    VideoService videoService;
+    @Autowired
     SubCategoryRepo subCategoryRepo;
 
     @Value("${project.image}")
@@ -46,7 +53,7 @@ public class SubCategoryImp {
                 subcate.setCategoryId(categoryId);
                 subcate.setSubCategoryName(subCategoryName);
                 if (file.isEmpty()) {
-                    subcate.setSubCategoryImgUrl("https://seven02.s3.ap-south-1.amazonaws.com/defaultCategoryImage.png");
+//                    subcate.setSubCategoryImgUrl("https://seven02.s3.ap-south-1.amazonaws.com/defaultCategoryImage.png");
                 } else {
                     subcate.setSubCategoryImgUrl(this.storageServices.uploadFile(path, file));
                 }
@@ -65,12 +72,28 @@ public class SubCategoryImp {
         return new ResponseEntity<>(all, HttpStatus.OK);
     }
 
-    public ResponseEntity deletesubCategoryById(int subId) {
+    public ResponseEntity deleteSubCategoryById(int subId) {
         if (subCategoryRepo.existsById(subId)) {
             SubCategory subCategory = subCategoryRepo.findById(subId).get();
             String subCategoryImgUrl = subCategory.getSubCategoryImgUrl();
-            if(!subCategoryImgUrl.isEmpty()) {
-                String s = storageServices.deleteFile(subCategoryImgUrl);
+            if (!subCategoryImgUrl.isEmpty()) {
+                storageServices.deleteFile(subCategoryImgUrl);
+            }
+            List<VideoData> bySubCategoryId = videoRepository.findBySubCategoryId(subId);
+            if (!bySubCategoryId.isEmpty()) {
+                for (VideoData videoData : bySubCategoryId) {
+                    int videoId = videoData.getVideoId();
+//                String videoUrl = videoData.getVideoUrl();
+//                String thumbNailUrl = videoData.getThumbNailUrl();
+//                if (!videoUrl.isEmpty()) {
+//                    storageServices.deleteFile(videoUrl);
+//                }
+//                if (!thumbNailUrl.isEmpty()) {
+//                    storageServices.deleteFile(thumbNailUrl);
+//                }
+//                videoRepository.deleteById(videoId);
+                    videoService.deleteVideo(videoId);
+                }
             }
 
             subCategoryRepo.deleteById(subId);
@@ -79,29 +102,35 @@ public class SubCategoryImp {
             return new ResponseEntity(new MessageResponse(false, "This id doesn't exist!!"), HttpStatus.OK);
         }
     }
-    public String deletefiletest(String url){
-       return storageServices.deleteFile(url);
+
+    public String deletefiletest(String url) {
+        return storageServices.deleteFile(url);
     }
-    public ResponseEntity<?> getSubCategoryByCategoryId(int categoryId){
+
+    public ResponseEntity<?> getSubCategoryByCategoryId(int categoryId) {
         List<SubCategory> byCategoryId = subCategoryRepo.findByCategoryId(categoryId);
-        if(!byCategoryId.isEmpty()) {
+        if (!byCategoryId.isEmpty()) {
             return new ResponseEntity<>(new SubCategoryResponse(true, "Successfully done...", byCategoryId), HttpStatus.OK);
-        }else{
-            return new ResponseEntity<>(new MessageResponse(false,"No such type of sub category here!!!"),HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(new MessageResponse(false, "No such type of sub category here!!!"), HttpStatus.OK);
         }
 //        return new ResponseEntity<>(byCategoryId,HttpStatus.OK);
     }
 
-    public ResponseEntity updateSubCategory(int subCategoryId,int categoryId,String subCategoryName,MultipartFile file) {
+    public ResponseEntity updateSubCategory(int subCategoryId, int categoryId, String subCategoryName, MultipartFile file) {
         if (subCategoryRepo.existsById(subCategoryId)) {
             SubCategory subCategory = subCategoryRepo.findById(subCategoryId).get();
             subCategory.setCategoryId(categoryId);
-            if(!subCategoryName.isEmpty()) {
+            if (!subCategoryName.isEmpty()) {
                 subCategory.setSubCategoryName(subCategoryName);
             }
-            if(!file.isEmpty()){
-                subCategory.setSubCategoryImgUrl(storageServices.uploadFile(path,file));
-            }else{
+            if (!file.isEmpty()) {
+                String url = subCategory.getSubCategoryImgUrl();
+                if(url!=null) {
+                    storageServices.deleteFile(url);
+                }
+                subCategory.setSubCategoryImgUrl(storageServices.uploadFile(path, file));
+            } else {
                 subCategory.setSubCategoryImgUrl(subCategory.getSubCategoryImgUrl());
             }
             subCategoryRepo.save(subCategory);
