@@ -4,23 +4,23 @@ import com.logical.auth.entity.CategoryData;
 import com.logical.auth.entity.SubCategory;
 import com.logical.auth.entity.VideoData;
 import com.logical.auth.model.response.MessageResponse;
-import com.logical.auth.model.response.SubCategoryResponse;
+//import com.logical.auth.model.response.SubCategoryResponse;
 import com.logical.auth.repository.CategoryRepo;
 import com.logical.auth.repository.SubCategoryRepo;
 import com.logical.auth.repository.VideoRepository;
 import com.logical.auth.services.StorageServices;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
+//import org.springframework.data.domain.Page;
+//import org.springframework.data.domain.PageRequest;
+//import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
+//import org.springframework.ui.Model;
+//import org.springframework.web.bind.annotation.GetMapping;
+//import org.springframework.web.bind.annotation.PathVariable;
+//import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -110,10 +110,11 @@ public class SubCategoryImp {
     public ResponseEntity<?> getSubCategoryByCategoryId(int categoryId) {
         List<SubCategory> byCategoryId = subCategoryRepo.findByCategoryId(categoryId);
         if (!byCategoryId.isEmpty()) {
-            return new ResponseEntity<>(new SubCategoryResponse(true, "Successfully done...", byCategoryId), HttpStatus.OK);
+           // return new ResponseEntity<>(new SubCategoryResponse(true, "Successfully done...", byCategoryId), HttpStatus.OK);
         } else {
             return new ResponseEntity<>(new MessageResponse(false, "No such type of sub category here!!!"), HttpStatus.OK);
         }
+        return null;
 //        return new ResponseEntity<>(byCategoryId,HttpStatus.OK);
     }
 

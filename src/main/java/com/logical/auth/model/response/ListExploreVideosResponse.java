@@ -8,6 +8,7 @@ import lombok.Setter;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -16,5 +17,6 @@ import java.util.Map;
 public class ListExploreVideosResponse {
     boolean result;
     String message;
-   Map<String,List<VideoData>>data;
+  // Map<String,List<VideoData>>data;
+  Set<ListVideosByCategoryName2[]> data;
 }

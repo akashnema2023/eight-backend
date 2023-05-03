@@ -4,6 +4,7 @@ import com.logical.auth.client.PlayListVideosData;
 import com.logical.auth.entity.PlayListData;
 import com.logical.auth.entity.VideoData;
 import com.logical.auth.model.Request.CreatePlayListRequest;
+import com.logical.auth.model.response.GetPlayListWithVideosByUserIdResponse;
 import com.logical.auth.model.response.GetVideosFromPlayListResponse;
 import com.logical.auth.model.response.ListOfPlayListByUserIdResponse;
 import com.logical.auth.model.response.MessageResponse;
@@ -143,38 +144,70 @@ public class PlayListService {
             return new ResponseEntity<>(new MessageResponse(false,"Please...provide valid playlistId...!"),HttpStatus.NOT_ACCEPTABLE);
         }
     }
-    public ResponseEntity<?>getListOfPlayListByUserId(long userId){
-        if(userId>0){
-            if (userRepository.existsById(userId)){
-                List<PlayListVideosData>playListVideosData=playListVideosRepo.findAll();
-                Map<String,List<PlayListVideosData>>map=new HashMap<>();
-                List<Map<String,  List<PlayListVideosData>>> list = new ArrayList<>();
-                ListOfPlayListByUserIdResponse listOfPlayListByUserIdResponse=new ListOfPlayListByUserIdResponse();
-                PlayListVideosData playListData=new PlayListVideosData();
-                if(playListVideosData.isEmpty()){
-                    return new ResponseEntity<>(new MessageResponse(false,"There is no playList with this userId...!"),HttpStatus.NOT_FOUND);
-                }else {
-                    for(PlayListVideosData playListVideosData1:playListVideosData){
-                        playListData=playListVideosData1;
-                       // String playListName=playListData.getPlayListName();
-                        int playListId=playListData.getPlayListId();
-                        PlayListData playListData1=this.playListRepo.findById(playListId).get();
-                        if(playListData1 != null){
-                            String playListName=playListData1.getPlayListName();
-                            List<PlayListVideosData>playListVideosData2=this.playListVideosRepo.findByPlayListId(playListId);
-                            map.put(playListName,playListVideosData2);
-                            list.add(map);
-                        }
+//    public ResponseEntity<?>getListOfPlayListByUserId(long userId){
+//        if(userId>0){
+//            if (userRepository.existsById(userId)){
+//                List<PlayListVideosData>playListVideosData=playListVideosRepo.findAll();
+//                Map<String,List<PlayListVideosData>>map=new HashMap<>();
+//                List<Map<String,  List<PlayListVideosData>>> list = new ArrayList<>();
+//                ListOfPlayListByUserIdResponse listOfPlayListByUserIdResponse=new ListOfPlayListByUserIdResponse();
+//                PlayListVideosData playListData=new PlayListVideosData();
+//                if(playListVideosData.isEmpty()){
+//                    return new ResponseEntity<>(new MessageResponse(false,"There is no playList with this userId...!"),HttpStatus.NOT_FOUND);
+//                }else {
+//                    for(PlayListVideosData playListVideosData1:playListVideosData){
+//                        playListData=playListVideosData1;
+//                       // String playListName=playListData.getPlayListName();
+//                        int playListId=playListData.getPlayListId();
+//                        PlayListData playListData1=this.playListRepo.findById(playListId).get();
+//                        if(playListData1 != null){
+//                            String playListName=playListData1.getPlayListName();
+//                            List<PlayListVideosData>playListVideosData2=this.playListVideosRepo.findByPlayListId(playListId);
+//                            map.put(playListName,playListVideosData2);
+//                            list.add(map);
+//                        }
+//                    }
+//                    return new ResponseEntity<>(new ListOfPlayListByUserIdResponse(true,"Success",map),HttpStatus.OK);
+//                }
+//            } else {
+//                return new ResponseEntity<>(new MessageResponse(false, "User does exist with this userId"), HttpStatus.NOT_ACCEPTABLE);
+//            }
+//        }else{
+//            return new ResponseEntity<>(new MessageResponse(false,"Please....provide valid userId...!"),HttpStatus.NOT_ACCEPTABLE);
+//        }
+//    }
+public ResponseEntity<?>getListOfPlayListWithVideosByUserId(long userId){
+    if(userId>0){
+        if (userRepository.existsById(userId)){
+            List<PlayListVideosData>playListVideosData=playListVideosRepo.findAll();
+            Map<String,List<PlayListVideosData>>map=new HashMap<>();
+            List<Map<String,  List<PlayListVideosData>>> list = new ArrayList<>();
+            ListOfPlayListByUserIdResponse listOfPlayListByUserIdResponse=new ListOfPlayListByUserIdResponse();
+            PlayListVideosData playListData=new PlayListVideosData();
+            if(playListVideosData.isEmpty()){
+                return new ResponseEntity<>(new MessageResponse(false,"There is no playList with this userId...!"),HttpStatus.NOT_FOUND);
+            }else {
+                for(PlayListVideosData playListVideosData1:playListVideosData){
+                    playListData=playListVideosData1;
+                    // String playListName=playListData.getPlayListName();
+                    int playListId=playListData.getPlayListId();
+                    PlayListData playListData1=this.playListRepo.findById(playListId).get();
+                    if(playListData1 != null){
+                        String playListName=playListData1.getPlayListName();
+                        List<PlayListVideosData>playListVideosData2=this.playListVideosRepo.findByPlayListId(playListId);
+                        map.put(playListName,playListVideosData2);
+                        list.add(map);
                     }
-                    return new ResponseEntity<>(new ListOfPlayListByUserIdResponse(true,"Success",map),HttpStatus.OK);
                 }
-            } else {
-                return new ResponseEntity<>(new MessageResponse(false, "User does exist with this userId"), HttpStatus.NOT_ACCEPTABLE);
+                return new ResponseEntity<>(new GetPlayListWithVideosByUserIdResponse(true,"Success",map),HttpStatus.OK);
             }
-        }else{
-            return new ResponseEntity<>(new MessageResponse(false,"Please....provide valid userId...!"),HttpStatus.NOT_ACCEPTABLE);
+        } else {
+            return new ResponseEntity<>(new MessageResponse(false, "User does exist with this userId"), HttpStatus.NOT_ACCEPTABLE);
         }
+    }else{
+        return new ResponseEntity<>(new MessageResponse(false,"Please....provide valid userId...!"),HttpStatus.NOT_ACCEPTABLE);
     }
+}
     public ResponseEntity<?> deleteVideoPresentInPlayList(int playListId, long userId, int videoId) {
         if(playListId>0){
             if(userId>0) {
@@ -218,4 +251,23 @@ public class PlayListService {
             return new ResponseEntity<>(new MessageResponse(false,"Please provide valid playListId...!"),HttpStatus.NOT_ACCEPTABLE);
         }
     }
+
+    public ResponseEntity<?>getListOfPlayListByUserIds(long userId) {
+        if (userId > 0) {
+            if (userRepository.existsById(userId)) {
+                List<PlayListData>playListData=playListRepo.findAllPlayListByUserId(userId);
+                if(playListData.isEmpty()){
+                    return new ResponseEntity<>(new MessageResponse(false,"There is no playList with this userId...!"),HttpStatus.NOT_FOUND);
+                }else {
+                    return new ResponseEntity<>(new ListOfPlayListByUserIdResponse(true,"Success",playListData),HttpStatus.OK);
+                }
+
+            } else {
+                return new ResponseEntity<>(new MessageResponse(false, "User does exist with this userId"), HttpStatus.NOT_ACCEPTABLE);
+            }
+        } else {
+            return new ResponseEntity<>(new MessageResponse(false, "Please....provide valid userId...!"), HttpStatus.NOT_ACCEPTABLE);
+        }
+    }
+
 }

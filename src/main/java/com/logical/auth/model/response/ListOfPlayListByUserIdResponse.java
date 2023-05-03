@@ -16,5 +16,7 @@ import java.util.Map;
 public class ListOfPlayListByUserIdResponse {
     public boolean result;
     public String message;
-    Map<String,List<PlayListVideosData>> data;
+    // Map<String,List<PlayListVideosData>> data;
+
+    List<PlayListData>data;
 }
