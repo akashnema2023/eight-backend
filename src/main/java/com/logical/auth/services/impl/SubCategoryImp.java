@@ -5,6 +5,7 @@ import com.logical.auth.entity.SubCategory;
 import com.logical.auth.entity.VideoData;
 import com.logical.auth.model.response.MessageResponse;
 //import com.logical.auth.model.response.SubCategoryResponse;
+import com.logical.auth.model.response.SubCategoryResponse;
 import com.logical.auth.repository.CategoryRepo;
 import com.logical.auth.repository.SubCategoryRepo;
 import com.logical.auth.repository.VideoRepository;
@@ -110,11 +111,11 @@ public class SubCategoryImp {
     public ResponseEntity<?> getSubCategoryByCategoryId(int categoryId) {
         List<SubCategory> byCategoryId = subCategoryRepo.findByCategoryId(categoryId);
         if (!byCategoryId.isEmpty()) {
-           // return new ResponseEntity<>(new SubCategoryResponse(true, "Successfully done...", byCategoryId), HttpStatus.OK);
+            return new ResponseEntity<>(new SubCategoryResponse(true, "Successfully done...", byCategoryId), HttpStatus.OK);
         } else {
             return new ResponseEntity<>(new MessageResponse(false, "No such type of sub category here!!!"), HttpStatus.OK);
         }
-        return null;
+
 //        return new ResponseEntity<>(byCategoryId,HttpStatus.OK);
     }
 
