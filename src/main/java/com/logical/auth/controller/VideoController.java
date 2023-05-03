@@ -193,17 +193,17 @@ public class VideoController {
         }
     }
 
-    @GetMapping("/getListVideosAccordingCategoryName")
-    public ResponseEntity<?> getListVideosAccordingCategoryName() {
-        try {
-            return videoService.getListVideosByCategory();
-//            return videoService.getVideoAccordingToCategory1();
-
-        } catch (Exception e) {
-            logger.info(" " + e);
-            return new ResponseEntity<>(new MessageResponse(false, "Something went wrong...!"), HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
+//    @GetMapping("/getListVideosAccordingCategoryName")
+//    public ResponseEntity<?> getListVideosAccordingCategoryName() {
+//        try {
+//            return videoService.getListVideosByCategory();
+////            return videoService.getVideoAccordingToCategory1();
+//
+//        } catch (Exception e) {
+//            logger.info(" " + e);
+//            return new ResponseEntity<>(new MessageResponse(false, "Something went wrong...!"), HttpStatus.INTERNAL_SERVER_ERROR);
+//        }
+//    }
 
     @GetMapping("/getListVideosLikesByUser")
     public ResponseEntity<?> getListVideosLikesByUser(@RequestParam(name = "userId") long userId) {
@@ -249,7 +249,7 @@ public class VideoController {
     @GetMapping("/explore")
     public ResponseEntity<?> getListExploreVideos() {
         try {
-            return videoService.getListVideosAccordingExplore();
+            return videoService.getListVideosByexplore();
         } catch (Exception e) {
             logger.info(" " + e);
             return new ResponseEntity<>(new MessageResponse(false, "Something went wrong...!"), HttpStatus.INTERNAL_SERVER_ERROR);
@@ -272,6 +272,17 @@ public class VideoController {
             return videoService.showVideoByVideoId(videoId);
         } else {
             return "provide valid id!!";
+        }
+    }
+    @GetMapping("/getListVideosAccordingCategoryName")
+    public ResponseEntity<?>getListVideosAccordingCategoryNametest1(){
+        try{
+            return videoService.getListVideosByCategorys();
+//            return videoService.getVideoAccordingToCategory1();
+
+        }catch (Exception e) {
+            logger.info(" "+e);
+            return new ResponseEntity<>(new MessageResponse( false,"Something went wrong...!"), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }

@@ -57,9 +57,19 @@ public class PlayListController {
             return new ResponseEntity<>(new MessageResponse(false,"Something went wrong...Don't very we are figuring out what went wrong...!"),HttpStatus.INTERNAL_SERVER_ERROR);        }
     }
     @GetMapping("/getAllPlayListWithVideosByUserId")
+    public ResponseEntity<?>getAllPlayListWithVideosByUserId(@RequestParam(name="userId",required = true,defaultValue = "0") long userId){
+        try{
+             return playListService.getListOfPlayListWithVideosByUserId(userId);
+        }catch (Exception e){
+            logger.info(" "+e);
+            return new ResponseEntity<>(new MessageResponse(false,"Something went wrong...Don't very we are figuring out what went wrong...!"),HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @GetMapping("/getListPlayListByUserId")
     public ResponseEntity<?>getListPlayListByUserId(@RequestParam(name="userId",required = true,defaultValue = "0") long userId){
         try{
-             return playListService.getListOfPlayListByUserId(userId);
+            return playListService.getListOfPlayListByUserIds(userId);
         }catch (Exception e){
             logger.info(" "+e);
             return new ResponseEntity<>(new MessageResponse(false,"Something went wrong...Don't very we are figuring out what went wrong...!"),HttpStatus.INTERNAL_SERVER_ERROR);

@@ -1,7 +1,7 @@
 package com.logical.auth.controller;
 
 import com.logical.auth.entity.CategoryData;
-import com.logical.auth.entity.SubCategory;
+//import com.logical.auth.entity.SubCategory;
 import com.logical.auth.model.response.MessageResponse;
 import com.logical.auth.services.impl.SubCategoryImp;
 import org.springframework.beans.factory.annotation.Autowired;

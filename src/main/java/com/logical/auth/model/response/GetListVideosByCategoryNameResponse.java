@@ -6,17 +6,15 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
-@Getter
-@Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class ListExploreVideosResponse {
-    boolean result;
-    String message;
-  // Map<String,List<VideoData>>data;
-  Set<ListVideosByCategoryName2[]> data;
+@Getter
+@Setter
+public class GetListVideosByCategoryNameResponse {
+    int categoryId;
+    String categoryName;
+    Set<VideoData> categoryData;
+
 }
