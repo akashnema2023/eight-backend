@@ -193,17 +193,17 @@ public class VideoController {
         }
     }
 
-//    @GetMapping("/getListVideosAccordingCategoryName")
-//    public ResponseEntity<?> getListVideosAccordingCategoryName() {
-//        try {
-//            return videoService.getListVideosByCategory();
-////            return videoService.getVideoAccordingToCategory1();
-//
-//        } catch (Exception e) {
-//            logger.info(" " + e);
-//            return new ResponseEntity<>(new MessageResponse(false, "Something went wrong...!"), HttpStatus.INTERNAL_SERVER_ERROR);
-//        }
-//    }
+    @GetMapping("/getListVideosAccordingCategoryNameResponse")
+    public ResponseEntity<?> getListVideosAccordingCategoryName() {
+        try {
+            return videoService.getListVideosByCategory();
+//            return videoService.getVideoAccordingToCategory1();
+
+        } catch (Exception e) {
+            logger.info(" " + e);
+            return new ResponseEntity<>(new MessageResponse(false, "Something went wrong...!"), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 
     @GetMapping("/getListVideosLikesByUser")
     public ResponseEntity<?> getListVideosLikesByUser(@RequestParam(name = "userId") long userId) {

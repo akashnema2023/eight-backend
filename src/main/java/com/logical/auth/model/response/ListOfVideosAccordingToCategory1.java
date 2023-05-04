@@ -19,7 +19,7 @@ public class ListOfVideosAccordingToCategory1 {
     String message;
     //List<Map<String,List<VideoData>>>data;
     //Map<String,Map<String, List<VideoData>>> data;
-    Set<GetListVideosByCategoryNameResponse[]> data;
+    GetListVideosByCategoryNameResponse[] data;
 
 
 }

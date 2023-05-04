@@ -2,6 +2,7 @@ C:\logicalsevenproject\testdeploy\auth\src\main\java\com\logical\auth\controller
 C:\logicalsevenproject\testdeploy\auth\src\main\java\com\logical\auth\model\response\UpdateCategoryResponse.java
 C:\logicalsevenproject\testdeploy\auth\src\main\java\com\logical\auth\controller\NotificationCotroller.java
 C:\logicalsevenproject\testdeploy\auth\src\main\java\com\logical\auth\entity\HistoryData.java
+C:\logicalsevenproject\testdeploy\auth\src\main\java\com\logical\auth\model\response\GetPlayListWithVideosByUserIdResponse.java
 C:\logicalsevenproject\testdeploy\auth\src\main\java\com\logical\auth\model\UpdatePasswordRequest.java
 C:\logicalsevenproject\testdeploy\auth\src\main\java\com\logical\auth\client\PlayListVideosData.java
 C:\logicalsevenproject\testdeploy\auth\src\main\java\com\logical\auth\entity\SubscribeData.java
@@ -39,10 +40,12 @@ C:\logicalsevenproject\testdeploy\auth\src\main\java\com\logical\auth\repository
 C:\logicalsevenproject\testdeploy\auth\src\main\java\com\logical\auth\entity\SubCategory.java
 C:\logicalsevenproject\testdeploy\auth\src\main\java\com\logical\auth\model\response\ForgotPasswordMessage.java
 C:\logicalsevenproject\testdeploy\auth\src\main\java\com\logical\auth\services\impl\PlayListService.java
+C:\logicalsevenproject\testdeploy\auth\src\main\java\com\logical\auth\model\response\GetListVideosByCategoryNameResponse.java
 C:\logicalsevenproject\testdeploy\auth\src\main\java\com\logical\auth\entity\NotificationData.java
 C:\logicalsevenproject\testdeploy\auth\src\main\java\com\logical\auth\model\response\SignInResponse.java
 C:\logicalsevenproject\testdeploy\auth\src\main\java\com\logical\auth\repository\LikesRepo.java
 C:\logicalsevenproject\testdeploy\auth\src\main\java\com\logical\auth\services\PushNotificationService.java
+C:\logicalsevenproject\testdeploy\auth\src\main\java\com\logical\auth\model\response\SubCategoryResponse.java
 C:\logicalsevenproject\testdeploy\auth\src\main\java\com\logical\auth\entity\PlayListData.java
 C:\logicalsevenproject\testdeploy\auth\src\main\java\com\logical\auth\controller\SubCategoryController.java
 C:\logicalsevenproject\testdeploy\auth\src\main\java\com\logical\auth\controller\PlayListController.java
@@ -52,6 +55,7 @@ C:\logicalsevenproject\testdeploy\auth\src\main\java\com\logical\auth\services\E
 C:\logicalsevenproject\testdeploy\auth\src\main\java\com\logical\auth\repository\PlayListRepo.java
 C:\logicalsevenproject\testdeploy\auth\src\main\java\com\logical\auth\services\file\FileService.java
 C:\logicalsevenproject\testdeploy\auth\src\main\java\com\logical\auth\model\Request\CreatePlayListRequest.java
+C:\logicalsevenproject\testdeploy\auth\src\main\java\com\logical\auth\model\response\ListOfVideosAccordingToCategory1.java
 C:\logicalsevenproject\testdeploy\auth\src\main\java\com\logical\auth\security\jwt\JwtUtils.java
 C:\logicalsevenproject\testdeploy\auth\src\main\java\com\logical\auth\repository\ViewsRepo.java
 C:\logicalsevenproject\testdeploy\auth\src\main\java\com\logical\auth\repository\MyDownloadRepo.java
@@ -82,6 +86,7 @@ C:\logicalsevenproject\testdeploy\auth\src\main\java\com\logical\auth\model\Requ
 C:\logicalsevenproject\testdeploy\auth\src\main\java\com\logical\auth\model\response\TotalViewsResponse.java
 C:\logicalsevenproject\testdeploy\auth\src\main\java\com\logical\auth\model\response\ListOfPlayListByUserIdResponse.java
 C:\logicalsevenproject\testdeploy\auth\src\main\java\com\logical\auth\entity\MyDownloadData.java
+C:\logicalsevenproject\testdeploy\auth\src\main\java\com\logical\auth\model\response\ListVideosByCategoryName2.java
 C:\logicalsevenproject\testdeploy\auth\src\main\java\com\logical\auth\services\StorageServices.java
 C:\logicalsevenproject\testdeploy\auth\src\main\java\com\logical\auth\repository\CategoryRepo.java
 C:\logicalsevenproject\testdeploy\auth\src\main\java\com\logical\auth\enums\CategoryType.java

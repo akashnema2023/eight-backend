@@ -634,26 +634,26 @@ public class VideoService {
         }
     }
 
-//    public ResponseEntity<?> getListVideosByCategory() {
-//        List<VideoData> videoDataList = videoRepository.findAll();
-//        //CategoryList categoryList=new CategoryList();
-//        Map<String, List<VideoData>> map = new HashMap<>();
-//        List<Map<String, List<VideoData>>> list = new ArrayList<>();
-//        ListVideosByCategoryNameResponse listVideosByCategoryNameResponse = new ListVideosByCategoryNameResponse();
-//        VideoData videoData = new VideoData();
-//        for (VideoData data : videoDataList) {
-//            videoData = data;
-//            int catId = videoData.getCategoryId();
-//            CategoryData categoryData = categoryService.getCategoryById(catId);
-//            if (categoryData != null) {
-//                String categoryName = categoryData.getCategoryName();
-//                List<VideoData> videoData1 = videoRepository.getVideosByCategoryId(catId);
-//                map.put(categoryName, videoData1);
-//                list.add(map);
-//            }
-//        }
-//        return new ResponseEntity<>(new ListVideosByCategoryNameResponse(true, "Success", map), HttpStatus.OK);
-//    }
+    public ResponseEntity<?> getListVideosByCategory() {
+        List<VideoData> videoDataList = videoRepository.findAll();
+        //CategoryList categoryList=new CategoryList();
+        Map<String, List<VideoData>> map = new HashMap<>();
+        List<Map<String, List<VideoData>>> list = new ArrayList<>();
+        ListVideosByCategoryNameResponse listVideosByCategoryNameResponse = new ListVideosByCategoryNameResponse();
+        VideoData videoData = new VideoData();
+        for (VideoData data : videoDataList) {
+            videoData = data;
+            int catId = videoData.getCategoryId();
+            CategoryData categoryData = categoryService.getCategoryById(catId);
+            if (categoryData != null) {
+                String categoryName = categoryData.getCategoryName();
+                List<VideoData> videoData1 = videoRepository.getVideosByCategoryId(catId);
+                map.put(categoryName, videoData1);
+                list.add(map);
+            }
+        }
+        return new ResponseEntity<>(new ListVideosByCategoryNameResponse(true, "Success", map), HttpStatus.OK);
+    }
 
 //    public ResponseEntity<?> getVideoAccordingToCategory1(){
 //        List<VideoData> videoDataList=videoRepository.findAll();
@@ -841,7 +841,7 @@ public class VideoService {
 //        listMap.add(map);
 //        categorydata.put("CategoryData",listMap);
         //return new ResponseEntity<>(new ListVideosByCategoryNameResponse(true, "Success", map), HttpStatus.OK);
-        return new ResponseEntity<>(new ListOfVideosAccordingToCategory1(true, "Success", listEx), HttpStatus.OK);
+        return new ResponseEntity<>(new ListOfVideosAccordingToCategory1(true, "Success", getListVideosByCategoryNameResponse), HttpStatus.OK);
     }
 
     public ResponseEntity<?> getListVideosByexplore() {
@@ -880,7 +880,7 @@ public class VideoService {
             // }
 //            listEx.add(listVideosByCategoryName2s);
         }
-        return new ResponseEntity<>(new ListExploreVideosResponse(true, "Success", listEx), HttpStatus.OK);
+        return new ResponseEntity<>(new ListExploreVideosResponse(true, "Success", listVideosByCategoryName2s), HttpStatus.OK);
     }
 
 }

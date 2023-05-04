@@ -19,10 +19,5 @@ public class PlayListData {
     private  long userId;
     private int videoId;
     private String playListName;
-    private String thumbNailImgUrl;
-//    @OneToMany(targetEntity=AddVideoInPlayList.class, mappedBy="playlist", fetch=FetchType.EAGER)
-//    public AddVideoInPlayList addVideoInPlayList;
- //   @OneToMany(targetEntity=VideoData.class, mappedBy="playlist", fetch=FetchType.EAGER)
-//    @ElementCollection
-//    List<VideoData>videoDataList;
+    private String playListImg;
 }
