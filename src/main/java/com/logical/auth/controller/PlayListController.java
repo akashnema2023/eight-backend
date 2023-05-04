@@ -1,6 +1,5 @@
 package com.logical.auth.controller;
 
-import com.logical.auth.model.Request.CreatePlayListRequest;
 import com.logical.auth.model.response.MessageResponse;
 import com.logical.auth.services.impl.PlayListService;
 import org.slf4j.Logger;
@@ -9,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
 @RestController
 @RequestMapping("/playlist")
 public class PlayListController {
@@ -16,9 +17,9 @@ public class PlayListController {
     PlayListService playListService;
     private Logger logger = LoggerFactory.getLogger(PlayListController.class);
     @PostMapping("/createPlayList")
-    public ResponseEntity<?>createPlayList(@RequestBody CreatePlayListRequest createPlayListRequest){
+    public ResponseEntity<?>createPlayList(@RequestParam(name = "userId",required = true,defaultValue = "0")long userId, @RequestParam(name="playListName", required = true)String playListName, @RequestParam(name="playListImg",required = true)MultipartFile file){
         try{
-            return playListService.createPlayList(createPlayListRequest);
+            return playListService.createPlayList(userId,playListName,file);
         }
         catch (Exception e) {
             logger.info(" "+e);

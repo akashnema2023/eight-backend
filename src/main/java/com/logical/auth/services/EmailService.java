@@ -176,7 +176,7 @@ public class EmailService {
             Session session = Session.getInstance(props, new Authenticator() {
                 @Override
                 protected PasswordAuthentication getPasswordAuthentication() {
-                    return new PasswordAuthentication("nemaaakashji5726@gmail.com", "wytdkvxjggyyadps\r\n"+"");
+                    return new PasswordAuthentication("hr.atmarambhide@gmail.com", "ajofjdohswdnasaf\r\n"+"");
                 }
 
             });
@@ -252,7 +252,7 @@ public class EmailService {
         Session session = Session.getInstance(props, new Authenticator() {
             @Override
             protected PasswordAuthentication getPasswordAuthentication() {
-                return new PasswordAuthentication("nemaaakashji5726@gmail.com", "wytdkvxjggyyadps\r\n"
+                return new PasswordAuthentication("hr.atmarambhide@gmail.com", "ajofjdohswdnasaf\r\n"
                         + "");
             }
 
