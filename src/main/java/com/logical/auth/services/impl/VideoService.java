@@ -805,7 +805,6 @@ public class VideoService {
             videoData = videoDataList.get(i);
             int catId = videoData.getCategoryId();
             CategoryData categoryData = categoryService.getCategoryById(catId);
-
             if (categoryData != null) {
                 if (!(set.contains(catId))) {
                     String categoryName = categoryData.getCategoryName();
