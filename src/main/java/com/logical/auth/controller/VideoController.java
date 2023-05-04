@@ -1,9 +1,5 @@
 package com.logical.auth.controller;
-
-import com.logical.auth.entity.VideoData;
 import com.logical.auth.enums.VideoType;
-import com.logical.auth.model.Request.UpdateVideoRequest;
-import com.logical.auth.model.Request.UploadVideoRequest;
 import com.logical.auth.model.response.MessageResponse;
 import com.logical.auth.services.impl.VideoService;
 import org.apache.logging.log4j.Logger;
@@ -13,22 +9,17 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
 import java.io.IOException;
 import java.io.UncheckedIOException;
-import java.util.List;
 import java.util.concurrent.ExecutionException;
-
 @RestController
 @RequestMapping("/video")
 public class VideoController {
     @Autowired
     VideoService videoService;
     private Logger logger = LogManager.getLogger(VideoController.class);
-
-
     @PostMapping("/uploadVideo")
-    public ResponseEntity<?> uploadVideo(@RequestParam(name = "videoFile", required = false) MultipartFile videoFile, @RequestParam(name = "thumbFile", required = false) MultipartFile thumbFile, @RequestParam(name = "userId", required = true) Long userId, @RequestParam(name = "categoryId", required = true) int categoryId, @RequestParam(name = "subCategoryId", required = true) int subCategoryId, @RequestParam(name = "videoTitle", required = false) String videoTitle, @RequestParam(name = "description", required = false) String description, @RequestParam(name = "tag", required = false) String tag, @RequestParam(name = "videoType", required = false) VideoType videoType) throws IOException {
+    public ResponseEntity<?> uploadVideo(@RequestParam(name = "videoFile", required = true) MultipartFile videoFile, @RequestParam(name = "thumbFile", required = false) MultipartFile thumbFile, @RequestParam(name = "userId", required = true) Long userId, @RequestParam(name = "categoryId", required = true) int categoryId, @RequestParam(name = "subCategoryId", required = true) int subCategoryId, @RequestParam(name = "videoTitle", required = false) String videoTitle, @RequestParam(name = "description", required = false) String description, @RequestParam(name = "tag", required = false) String tag, @RequestParam(name = "videoType", required = true) VideoType videoType) throws IOException {
         try {
             return videoService.uploadVideo(videoFile, thumbFile, userId, categoryId, subCategoryId, videoTitle, description, tag, videoType);
         } catch (UncheckedIOException e1) {
@@ -39,7 +30,6 @@ public class VideoController {
             return new ResponseEntity<>(new MessageResponse(false, "Something went wrong...!"), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-
     @GetMapping("/getAllVideosByUserId")
     public ResponseEntity<?> getAllVideosByUserId(@RequestParam(name = "userId", required = true, defaultValue = "0") long userId) {
         try {
@@ -249,7 +239,8 @@ public class VideoController {
     @GetMapping("/explore")
     public ResponseEntity<?> getListExploreVideos() {
         try {
-            return videoService.getListVideosByexplore();
+            return videoService.getListVideosByexplores();
+            //return videoService.getListVideosByexplore();
         } catch (Exception e) {
             logger.info(" " + e);
             return new ResponseEntity<>(new MessageResponse(false, "Something went wrong...!"), HttpStatus.INTERNAL_SERVER_ERROR);
@@ -277,12 +268,17 @@ public class VideoController {
     @GetMapping("/getListVideosAccordingCategoryName")
     public ResponseEntity<?>getListVideosAccordingCategoryNametest1(){
         try{
-            return videoService.getListVideosByCategorys();
+            return videoService.getListVideosByCategorysTest();
+        //    return videoService.getListVideosByCategorys();
 //            return videoService.getVideoAccordingToCategory1();
 
         }catch (Exception e) {
             logger.info(" "+e);
             return new ResponseEntity<>(new MessageResponse( false,"Something went wrong...!"), HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+  @GetMapping("/prime")
+   public ResponseEntity<?> ListVideosByType(){
+        return videoService.getListPrimeVideo();
     }
 }

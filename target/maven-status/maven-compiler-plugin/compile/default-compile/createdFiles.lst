@@ -21,6 +21,7 @@ com\logical\auth\model\response\ListNotificationResponse.class
 com\logical\auth\repository\UserRepository.class
 com\logical\auth\model\response\VideosListResponse.class
 com\logical\auth\model\Request\CreatePlayListRequest.class
+com\logical\auth\model\response\GetPlayListWithVideosByUserIdResponse.class
 com\logical\auth\model\UpdateUserRequest.class
 com\logical\auth\services\UserService.class
 com\logical\auth\model\response\MessageResponse.class
@@ -66,7 +67,10 @@ com\logical\auth\repository\HisoryRepo.class
 com\logical\auth\model\response\SearchVideosByKeywordResponse.class
 com\logical\auth\repository\PlayListRepo.class
 com\logical\auth\repository\PlayListVideosRepo.class
+com\logical\auth\model\response\SubCategoryResponse.class
+com\logical\auth\model\response\ListVideosByCategoryName2.class
 com\logical\auth\services\EmailService$1.class
+com\logical\auth\model\response\GetListVideosByCategoryNameResponse.class
 com\logical\auth\services\impl\FileServiceImpl.class
 com\logical\auth\config\AppConfig.class
 com\logical\auth\services\VideoService.class
@@ -92,4 +96,5 @@ com\logical\auth\entity\MyDownloadData.class
 com\logical\auth\model\response\MyDownloadVideosResponse.class
 com\logical\auth\model\response\TrendingVideosResponse.class
 com\logical\auth\model\response\CreateCategoryResponse.class
+com\logical\auth\model\response\ListOfVideosAccordingToCategory1.class
 com\logical\auth\services\impl\CategoryServiceImpl.class

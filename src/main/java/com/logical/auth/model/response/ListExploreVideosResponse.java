@@ -18,5 +18,5 @@ public class ListExploreVideosResponse {
     boolean result;
     String message;
   // Map<String,List<VideoData>>data;
-  Set<ListVideosByCategoryName2[]> data;
+  ListVideosByCategoryName2[]data;
 }

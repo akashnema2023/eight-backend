@@ -8,6 +8,7 @@ import com.logical.auth.model.Request.UploadVideoRequest;
 import com.logical.auth.model.response.*;
 import com.logical.auth.repository.*;
 import com.logical.auth.services.StorageServices;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Sort;
@@ -23,6 +24,9 @@ import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
 
+import static com.logical.auth.enums.VideoType.Global;
+import static com.logical.auth.enums.VideoType.Private;
+
 @Service
 public class VideoService {
     @Autowired
@@ -35,37 +39,31 @@ public class VideoService {
     LikesRepo likesRepo;
     @Autowired
     SubscribeRepo subscribeRepo;
-
     @Autowired
     StorageServices fileService;
     @Autowired
     HisoryRepo hisoryRepo;
-
     @Autowired
     CategoryServiceImpl categoryService;
-
     @Autowired
     SubCategoryRepo subCategoryRepo;
-
     //    @Autowired
-//    FileService fileService;
+    //    FileService fileService;
     @Value("${project.videos}")
     String path;
-
     @Value("${project.thumbnail}")
     String thumbpath;
-
-
+    @Autowired
+    PrimeRepo primeRepo;
     //    @Autowired
 //    RestTemplate restTemplate;
 //    @Autowired
 //    FCMService fcmService;
     @Autowired
     NotificationRepo notificationRepo;
-
+    @Autowired
+    ModelMapper modelMapper;
     public ResponseEntity<?> uploadVideo(MultipartFile videoFile, MultipartFile thumbFile, Long userId, int categoryId, int subCategoryId, String videoTitle, String description, String tag, VideoType videoType) throws IOException, ExecutionException, InterruptedException {
-
-
         if (userId > 0) {
             if (categoryId > 0 && subCategoryId > 0) {
                 if (userRepository.existsById(userId)) {
@@ -74,19 +72,15 @@ public class VideoService {
                             UserData userData = userRepository.findById(userId).get();
                             PushNotificationRequest pushNotificationRequest = new PushNotificationRequest();
                             VideoData videoData = new VideoData();
+
 //                            videoData.setVideoUrl(this.fileService.uploadFile(path, videoFile));
                             videoData.setVideoUrl(this.fileService.uploadFile(path, videoFile));
 //                            videoData.setThumbNailUrl(this.fileService.uploadFile(thumbpath, thumbFile));;
                             videoData.setThumbNailUrl(this.fileService.uploadFile(thumbpath, thumbFile));
-
                             videoData.setUserId(userId);
-
                             videoData.setUserName(userData.getFirstName() + " " + userData.getLastName());
                             videoData.setCategoryId(categoryId);
-
                             videoData.setSubCategoryId(subCategoryId);
-
-
                             videoData.setDescription(description);
                             videoData.setTag(tag);
                             videoData.setVideoTitle(videoTitle);
@@ -97,7 +91,12 @@ public class VideoService {
                             videoData.setLikeStatus(false);
                             videoData.setSubscribeStatus(false);
                             videoData.setUserProfileUrl("");
-                            videoRepository.save(videoData);
+                            if(videoType.toString().equals("Private")){
+                                PrimeVideoData primeVideoData=this.modelMapper.map(videoData,PrimeVideoData.class);
+                                primeRepo.save(primeVideoData);
+                            }else {
+                                videoRepository.save(videoData);
+                            }
                             userData.setTotalUploadedVideos((userData.getTotalUploadedVideos()) + 1);
                             userRepository.save(userData);
                             List<SubscribeData> subscribeDataList = subscribeRepo.getListAllSubscriberByUserId(userId);
@@ -133,19 +132,15 @@ public class VideoService {
             return new ResponseEntity<>(new MessageResponse(false, "Please provide valid userId "), HttpStatus.NOT_ACCEPTABLE);
         }
     }
-
     public ResponseEntity<?> getVideosByUserId(long userId) {
         //   GetListVideosByUserIdResponse getListVideosByUserIdResponse=new GetListVideosByUserIdResponse();
         List<VideoData> listVideos = this.videoRepository.getVideosByUserId(userId);
         if (!(listVideos.isEmpty())) {
-
             return new ResponseEntity<>(new GetListVideosByUserIdResponse(true, "Success", listVideos), HttpStatus.OK);
         } else {
             return new ResponseEntity<>(new MessageResponse(false, "There is no videos with this userId...!"), HttpStatus.NOT_FOUND);
-
         }
     }
-
     public ResponseEntity<?> updateVideoByUserId(MultipartFile videoFile, MultipartFile thumbFile, Long userId, int videoId, int categoryId, int subCategoryId, String videoTitle, String description, String tag, VideoType videoType) throws IOException {
         if (videoId > 0) {
             if (userId > 0) {
@@ -172,9 +167,7 @@ public class VideoService {
                                     videoData.setThumbNailUrl(videoData.getThumbNailUrl());
                                 }
                                 videoData.setUserId(userId);
-
                                 videoData.setUserName(userData.getFirstName() + " " + userData.getLastName());
-
                                 videoData.setCategoryId(categoryId);
                                 if (subCategoryId > 0) {
                                     videoData.setSubCategoryId(subCategoryId);
@@ -205,7 +198,6 @@ public class VideoService {
             return new ResponseEntity<>(new MessageResponse(false, "Please provide valid videoId "), HttpStatus.NOT_ACCEPTABLE);
         }
     }
-
     public ResponseEntity<?> deleteVideo(int videoId) {
         if (videoId > 0) {
             if (videoRepository.existsById(videoId)) {
@@ -229,7 +221,6 @@ public class VideoService {
             return new ResponseEntity<>(new MessageResponse(false, "Please provide valid videoId "), HttpStatus.NOT_ACCEPTABLE);
         }
     }
-
     public ResponseEntity<?> getVideoByVideoId(int videoId) {
         if (videoId > 0) {
             if (videoRepository.existsById(videoId)) {
@@ -242,10 +233,10 @@ public class VideoService {
             return new ResponseEntity<>(new MessageResponse(false, "Please provide valid videoId "), HttpStatus.NOT_ACCEPTABLE);
         }
     }
-
     public ResponseEntity<?> getListVideosByCategoryId(int categoryId) {
         if (categoryId > 0) {
-            List<VideoData> videoList = videoRepository.getVideosByCategoryId(categoryId);
+            List<VideoData> videoList = videoRepository.findByCategoryIdAndVideoType(categoryId,Global);
+                    //videoRepository.getVideosByCategoryId(categoryId,Global);
             Collections.reverse(videoList);
             if (videoList.isEmpty()) {
                 return new ResponseEntity<>(new MessageResponse(false, "Videos does not exist with categoryId...!"), HttpStatus.NOT_FOUND);
@@ -256,7 +247,6 @@ public class VideoService {
             return new ResponseEntity<>(new MessageResponse(false, "Please provide valid categoryId "), HttpStatus.NOT_ACCEPTABLE);
         }
     }
-
     public ResponseEntity<?> getListVideosBySubCategoryId(int subCategoryId) {
         if (subCategoryId > 0) {
             List<VideoData> videoList = videoRepository.findBySubCategoryId(subCategoryId);
@@ -270,7 +260,6 @@ public class VideoService {
             return new ResponseEntity<>(new MessageResponse(false, "Please provide valid subCategoryId "), HttpStatus.NOT_ACCEPTABLE);
         }
     }
-
     public ResponseEntity<?> getTotalView(int videoId, long userId) {
         if (videoId > 0) {
             if (userId > 0) {
@@ -299,22 +288,20 @@ public class VideoService {
             return new ResponseEntity<>(new MessageResponse(false, "Please provide valid videoId "), HttpStatus.NOT_ACCEPTABLE);
         }
     }
-
     public ResponseEntity<?> getListVideos() {
         List<VideoData> videoDataList = videoRepository.findAll();
-//        List<UserData> user=
-//        for(VideoData videoData : videoDataList){
-//            long uid=videoData.getUserId();
-//            UserData userData = userRepository.findById(uid).get();
-//            String userName=userData.getFirstName()+" "+userData.getLastName();
-//        }
+        List<VideoData>listNonPrimeVideos=new ArrayList<>();
+        for(VideoData videoData:videoDataList){
+            if(videoData.getVideoType()!=Private){
+                listNonPrimeVideos.add(videoData);
+            }
+        }
         if (videoDataList.isEmpty()) {
             return new ResponseEntity<>(new MessageResponse(false, "No Videos...Please upload video"), HttpStatus.OK);
         } else {
-            return new ResponseEntity<>(new VideosListResponse(true, "Success", videoDataList), HttpStatus.OK);
+            return new ResponseEntity<>(new VideosListResponse(true, "Success", listNonPrimeVideos), HttpStatus.OK);
         }
     }
-
     public ResponseEntity<?> getTotalLikes(int videoId, long userId) throws ExecutionException, InterruptedException {
         if (videoId > 0) {
             if (userId > 0) {
@@ -335,7 +322,6 @@ public class VideoService {
                                     likesData.setUserId(0);
                                     likesData.setLikeStatus(false);
                                     videoRepository.save(videoData);
-
                                     String name = userData.getFirstName();
                                     if (!name.isEmpty()) {
                                         //                                    NotificationData notificationData=new NotificationData();
@@ -344,7 +330,6 @@ public class VideoService {
                                         //                                    notificationData.setNotificationMessage(message);
                                         //                                    notificationData.setCreatedAt(new Date());
                                         //                                    notificationRepo.save(notificationData);
-
                                         //                                    pushNotificationRequest.setMessage(message);
                                         //                                    fcmService.sendMessageToToken(pushNotificationRequest);
                                     }
@@ -364,7 +349,6 @@ public class VideoService {
                                         //                                    notificationData.setNotificationMessage(message);
                                         //                                    notificationData.setCreatedAt(new Date());
                                         //                                    notificationRepo.save(notificationData);
-
                                         //                                    pushNotificationRequest.setMessage(message);
                                         //                                    fcmService.sendMessageToToken(pushNotificationRequest);
                                     }
@@ -380,7 +364,6 @@ public class VideoService {
                                 videoData.setLikeStatus(true);
                                 likesRepo.save(likesData);
                                 videoRepository.save(videoData);
-
                                 String name = userData.getFirstName();
                                 if (!name.isEmpty()) {
                                     NotificationData notificationData = new NotificationData();
@@ -389,7 +372,6 @@ public class VideoService {
                                     notificationData.setNotificationMessage(message);
                                     notificationData.setCreatedAt(new Date());
                                     notificationRepo.save(notificationData);
-
                                     //                                pushNotificationRequest.setMessage(message);
                                     //                                fcmService.sendMessageToToken(pushNotificationRequest);
                                 }
@@ -424,7 +406,6 @@ public class VideoService {
             return new ResponseEntity<>(new MessageResponse(false, "Please provide valid videoId "), HttpStatus.NOT_ACCEPTABLE);
         }
     }
-
     public ResponseEntity<?> getMyDownloadVideos(int videoId, long userId) {
         if (videoId > 0) {
             if (userId > 0) {
@@ -466,7 +447,6 @@ public class VideoService {
             return new ResponseEntity<>(new MessageResponse(false, "Please provide valid videoId "), HttpStatus.NOT_ACCEPTABLE);
         }
     }
-
     public ResponseEntity<?> subScribe(long userId, long subscriberUserId) throws ExecutionException, InterruptedException {
         if (userId > 0) {
             if (userRepository.existsById(userId)) {
@@ -476,7 +456,6 @@ public class VideoService {
                         VideoData videoData = new VideoData();
                         UserData userData = userRepository.findById(subscriberUserId).get();
                         UserData userData1 = userRepository.findById(userId).get();
-
                         PushNotificationRequest pushNotificationRequest = new PushNotificationRequest();
                         List<VideoData> listVideos = this.videoRepository.getVideosByUserId(userId);
                         if (listVideos.isEmpty()) {
@@ -495,7 +474,6 @@ public class VideoService {
                                     i++;
                                 }
                                 subscribeRepo.deleteById(subscribeId);
-
                                 //                        String name = userData.getFirstName();
                                 //                        if (!name.isEmpty()) {
                                 //                            pushNotificationRequest.setMessage(name + " Unsbscribed your video ");
@@ -541,7 +519,6 @@ public class VideoService {
             return new ResponseEntity<>(new MessageResponse(false, "Please provide valid userId "), HttpStatus.NOT_ACCEPTABLE);
         }
     }
-
     public ResponseEntity<?> getHistoryVideos(int videoId, long userId) {
         if (videoId > 0) {
             if (userId > 0) {
@@ -576,7 +553,6 @@ public class VideoService {
             return new ResponseEntity<>(new MessageResponse(false, "Please provide valid videoId "), HttpStatus.NOT_ACCEPTABLE);
         }
     }
-
     public ResponseEntity<?> deleteVideoFromHistory(int videoId, long userId) {
         if (videoId > 0) {
             if (userId > 0) {
@@ -603,7 +579,6 @@ public class VideoService {
             return new ResponseEntity<>(new MessageResponse(false, "Please provide valid videoId "), HttpStatus.NOT_ACCEPTABLE);
         }
     }
-
     public ResponseEntity<?> getListMyHistory(long userId) {
         if (userId > 0) {
             if (userRepository.existsById(userId)) {
@@ -655,26 +630,6 @@ public class VideoService {
 //        return new ResponseEntity<>(new ListVideosByCategoryNameResponse(true, "Success", map), HttpStatus.OK);
 //    }
 
-//    public ResponseEntity<?> getVideoAccordingToCategory1(){
-//        List<VideoData> videoDataList=videoRepository.findAll();
-//        Map<String, List<VideoData>> map=new HashMap<>();
-//        Map<String,Map<String,List<VideoData>>> map2=new HashMap<>();
-//        List<Map<String, List<VideoData>>> list2=new ArrayList<>();
-//        for(VideoData videoData : videoDataList){
-//            int categoryId = videoData.getCategoryId();
-//            CategoryData categoryData = categoryService.getCategoryById(categoryId);
-//            List<VideoData> videosByCategoryId = videoRepository.getVideosByCategoryId(categoryId);
-//            map.put(categoryData.getCategoryName(), videosByCategoryId);
-//            map2.put(categoryData.getCategoryName(),map);
-//        }
-//        return new ResponseEntity<>(new ListOfVideosAccordingToCategory1(true, "Success", map2), HttpStatus.OK);
-//
-//    }
-
-//    public ResponseEntity<?> getListVideosByCategoryId(int categoryId){
-//            subCategoryRepo.
-//    }
-
     public ResponseEntity<?> getVideoLikesByUserId(long userid) {
         if (userid > 0) {
             if (userRepository.existsById(userid)) {
@@ -710,7 +665,6 @@ public class VideoService {
             return new ResponseEntity<>(new TrendingVideosResponse(true, "Success", dataList), HttpStatus.OK);
         }
     }
-
     public ResponseEntity<?> getAboutUs() {
         AboutUsResponse aboutUsResponse = new AboutUsResponse();
         aboutUsResponse.setResult(true);
@@ -718,7 +672,6 @@ public class VideoService {
         aboutUsResponse.setData("about: editable content is available under the terms of the GFDL and the CC By-SA License. All non-editable content and all content in the Learn section are copyrighted by AboutUs.");
         return ResponseEntity.ok(aboutUsResponse);
     }
-
     public ResponseEntity<?> getListVideosByKeyword(String keyword) {
         if (!(keyword.isEmpty())) {
             List<VideoData> videoDataList = videoRepository.getListVideosByKeyword(keyword);
@@ -770,7 +723,6 @@ public class VideoService {
             return new ResponseEntity<>(new MessageResponse(false, "Please provide valid userId...!"), HttpStatus.NOT_ACCEPTABLE);
         }
     }
-
     public String showVideoByVideoId(int videoId) {
         if (videoRepository.existsById(videoId)) {
             VideoData videoData = videoRepository.findById(videoId).get();
@@ -781,106 +733,179 @@ public class VideoService {
             return "This video id doesn't exist provide valid id!!";
         }
     }
-
-    public ResponseEntity<?> getListVideosByCategorys() {
-        Map<String,List<Map<String,List<VideoData>>>>categorydata=new HashMap<>();
-        List<Map<String,List<VideoData>>>listMap=new ArrayList<>();
+    public ResponseEntity<?> getListVideosByCategorysTest() {
         List<VideoData> videoDataList = videoRepository.findAll();
-
         GetListVideosByCategoryNameResponse []getListVideosByCategoryNameResponse=new GetListVideosByCategoryNameResponse[videoDataList.size()];
         Set<GetListVideosByCategoryNameResponse []>listEx=new HashSet<>();
         Set<Integer>set=new HashSet<>();
         set.add(0);
-
-        //CategoryList categoryList=new CategoryList();
-        Map<String, List<VideoData>> map = new HashMap<>();
-        List<Map<String, List<VideoData>>> list = new ArrayList<>();
-        ListVideosByCategoryNameResponse listVideosByCategoryNameResponse = new ListVideosByCategoryNameResponse();
-
-
+        int j=0;
         VideoData videoData = new VideoData();
-
         for(int i=0;i<videoDataList.size();i++){
-            //  if (i < videoDataList.size()) {
+
             videoData = videoDataList.get(i);
             int catId = videoData.getCategoryId();
             CategoryData categoryData = categoryService.getCategoryById(catId);
-
             if (categoryData != null) {
                 if (!(set.contains(catId))) {
-                    String categoryName = categoryData.getCategoryName();
-                    List<VideoData> videoData1 = videoRepository.getVideosByCategoryId(catId);
+                    List<VideoData> videoData1 = videoRepository.findByCategoryIdAndVideoType(catId,Global);
                     set.add(catId);
                     Set<VideoData>s=new HashSet<>();
-                    s.addAll(videoData1);
+                    for (VideoData v:videoData1){
+                        if(v!=null){
+                            s.add(v);
+                        }
+                    }
                     getListVideosByCategoryNameResponse[i] = new GetListVideosByCategoryNameResponse( catId, categoryData.categoryName,s);
                     listEx.add(getListVideosByCategoryNameResponse);
-                    //i++;
+                    j++;
                 }
-                //  map.put(categoryName, videoData1);
-                // list.add(map);
             }
-            // i++;
-            // listEx.add(listVideosByCategoryName2s);
-            // }
-//            listEx.add(listVideosByCategoryName2s);
         }
+        int k=0;
+        GetListVideosByCategoryNameResponse []getListVideosByCategoryNameResponse2=new GetListVideosByCategoryNameResponse[j];
+        for(int i=0;i<getListVideosByCategoryNameResponse.length;i++){
 
-//        for (VideoData data : videoDataList) {
-//            videoData = data;
+            if(getListVideosByCategoryNameResponse[i]!=null){
+                getListVideosByCategoryNameResponse2[k]=getListVideosByCategoryNameResponse[i];
+                k++;
+            }
+        }
+        return new ResponseEntity<>(new ListOfVideosAccordingToCategory1(true, "Success",getListVideosByCategoryNameResponse2 ), HttpStatus.OK);
+    }
+//    public ResponseEntity<?> getListVideosByCategorys() {
+//        Map<String,List<Map<String,List<VideoData>>>>categorydata=new HashMap<>();
+//        List<Map<String,List<VideoData>>>listMap=new ArrayList<>();
+//        List<VideoData> videoDataList = videoRepository.findAll();
+//
+//        GetListVideosByCategoryNameResponse []getListVideosByCategoryNameResponse=new GetListVideosByCategoryNameResponse[videoDataList.size()];
+//        Set<GetListVideosByCategoryNameResponse []>listEx=new HashSet<>();
+//        Set<Integer>set=new HashSet<>();
+//        set.add(0);
+//
+//        //CategoryList categoryList=new CategoryList();
+//        Map<String, List<VideoData>> map = new HashMap<>();
+//        List<Map<String, List<VideoData>>> list = new ArrayList<>();
+//        ListVideosByCategoryNameResponse listVideosByCategoryNameResponse = new ListVideosByCategoryNameResponse();
+//
+//
+//        VideoData videoData = new VideoData();
+//
+//        for(int i=0;i<videoDataList.size();i++){
+//            //  if (i < videoDataList.size()) {
+//            videoData = videoDataList.get(i);
 //            int catId = videoData.getCategoryId();
 //            CategoryData categoryData = categoryService.getCategoryById(catId);
+//
 //            if (categoryData != null) {
-//                videoData.setCategoryName(categoryData.getCategoryName());
-//                String categoryName = categoryData.getCategoryName();
-//                List<VideoData> videoData1 = videoRepository.getVideosByCategoryId(catId);
-//                map.put(categoryName, videoData1);
-//                list.add(map);
+//                if (!(set.contains(catId))) {
+//                    //String categoryName = categoryData.getCategoryName();
+//                    List<VideoData> videoData1 = videoRepository.getVideosByCategoryId(catId);
+//                    set.add(catId);
+//                    Set<VideoData>s=new HashSet<>();
+//                    s.addAll(videoData1);
+//                    getListVideosByCategoryNameResponse[i] = new GetListVideosByCategoryNameResponse( catId, categoryData.categoryName,s);
+//                    listEx.add(getListVideosByCategoryNameResponse);
+//                    //i++;
+//                }
+//                //  map.put(categoryName, videoData1);
+//                // list.add(map);
 //            }
+//            // i++;
+//            // listEx.add(listVideosByCategoryName2s);
+//            // }
+////            listEx.add(listVideosByCategoryName2s);
 //        }
-//        listMap.add(map);
-//        categorydata.put("CategoryData",listMap);
-        //return new ResponseEntity<>(new ListVideosByCategoryNameResponse(true, "Success", map), HttpStatus.OK);
-        return new ResponseEntity<>(new ListOfVideosAccordingToCategory1(true, "Success", listEx), HttpStatus.OK);
-    }
-
-    public ResponseEntity<?> getListVideosByexplore() {
+//
+////        for (VideoData data : videoDataList) {
+////            videoData = data;
+////            int catId = videoData.getCategoryId();
+////            CategoryData categoryData = categoryService.getCategoryById(catId);
+////            if (categoryData != null) {
+////                videoData.setCategoryName(categoryData.getCategoryName());
+////                String categoryName = categoryData.getCategoryName();
+////                List<VideoData> videoData1 = videoRepository.getVideosByCategoryId(catId);
+////                map.put(categoryName, videoData1);
+////                list.add(map);
+////            }
+////        }
+////        listMap.add(map);
+////        categorydata.put("CategoryData",listMap);
+//        //return new ResponseEntity<>(new ListVideosByCategoryNameResponse(true, "Success", map), HttpStatus.OK);
+//        return new ResponseEntity<>(new ListOfVideosAccordingToCategory1(true, "Success",getListVideosByCategoryNameResponse ), HttpStatus.OK);
+//    }
+    public ResponseEntity<?> getListVideosByexplores() {
         List<VideoData> videoDataList = videoRepository.findAll();
-        // ListExploreVideosResponse listExploreVideosResponse = new ListExploreVideosResponse();
-
         ListVideosByCategoryName2 []listVideosByCategoryName2s=new ListVideosByCategoryName2[videoDataList.size()];
-        Set<ListVideosByCategoryName2 []>listEx=new HashSet<>();
+        //  Set<ListVideosByCategoryName2 []>listEx=new HashSet<>();
         Set<Integer>set=new HashSet<>();
         set.add(0);
+        int j=0,k=0;
         VideoData videoData = new VideoData();
-        //  int i=0;
-        //for (VideoData data : videoDataList) {
         for(int i=0;i<videoDataList.size();i++){
-            //  if (i < videoDataList.size()) {
             videoData = videoDataList.get(i);
             int catId = videoData.getCategoryId();
             CategoryData categoryData = categoryService.getCategoryById(catId);
 
             if (categoryData != null) {
                 if (!(set.contains(catId))) {
-                    String categoryName = categoryData.getCategoryName();
-                    List<VideoData> videoData1 = videoRepository.getVideosByCategoryId(catId);
+                    List<VideoData> videoData1 = videoRepository.findByCategoryIdAndVideoType(catId,Global);
+                            //videoRepository.getVideosByCategoryId(catId,Global);
                     set.add(catId);
                     Set<VideoData>s=new HashSet<>();
                     s.addAll(videoData1);
                     listVideosByCategoryName2s[i] = new ListVideosByCategoryName2(videoData1.size(), categoryData.getCategoryImageUrl(), catId, categoryData.categoryName,s);
-                    listEx.add(listVideosByCategoryName2s);
-                    //i++;
+                    // listEx.add(listVideosByCategoryName2s);
+                    j++;
                 }
-                //  map.put(categoryName, videoData1);
-                // list.add(map);
             }
-            // i++;
-            // listEx.add(listVideosByCategoryName2s);
-            // }
-//            listEx.add(listVideosByCategoryName2s);
         }
-        return new ResponseEntity<>(new ListExploreVideosResponse(true, "Success", listEx), HttpStatus.OK);
+        ListVideosByCategoryName2 []listVideosByCategoryName3s=new ListVideosByCategoryName2 [j];
+        for(int i=0;i<listVideosByCategoryName2s.length;i++){
+            if(listVideosByCategoryName2s[i]!=null){
+                listVideosByCategoryName3s[k]=listVideosByCategoryName2s[i];
+                k++;
+            }
+        }
+        return new ResponseEntity<>(new ListExploreVideosResponse(true, "Success",listVideosByCategoryName3s ), HttpStatus.OK);
     }
-
+//    public ResponseEntity<?> getListVideosByexplore() {
+//        List<VideoData> videoDataList = videoRepository.findAll();
+//        ListVideosByCategoryName2 []listVideosByCategoryName2s=new ListVideosByCategoryName2[videoDataList.size()];
+//        Set<ListVideosByCategoryName2 []>listEx=new HashSet<>();
+//        Set<Integer>set=new HashSet<>();
+//        set.add(0);
+//        VideoData videoData = new VideoData();
+//        for(int i=0;i<videoDataList.size();i++){
+//            videoData = videoDataList.get(i);
+//            int catId = videoData.getCategoryId();
+//            CategoryData categoryData = categoryService.getCategoryById(catId);
+//
+//            if (categoryData != null) {
+//                if (!(set.contains(catId))) {
+//                    List<VideoData> videoData1 = videoRepository.getVideosByCategoryId(catId);
+//                    set.add(catId);
+//                    Set<VideoData>s=new HashSet<>();
+//                    s.addAll(videoData1);
+//                    listVideosByCategoryName2s[i] = new ListVideosByCategoryName2(videoData1.size(), categoryData.getCategoryImageUrl(), catId, categoryData.categoryName,s);
+//                    listEx.add(listVideosByCategoryName2s);
+//                }
+//            }
+//        }
+//        return new ResponseEntity<>(new ListExploreVideosResponse(true, "Success", listEx), HttpStatus.OK);
+//    }
+    public ResponseEntity<?>getListPrimeVideo(){
+        List<VideoData> videoDataList = videoRepository.findAll();
+        List<VideoData>listPrimeVideo=new ArrayList<>();
+        for(VideoData videoData:videoDataList){
+            if(videoData.getVideoType()==Private){
+                listPrimeVideo.add(videoData);
+            }
+        }
+        if (videoDataList.isEmpty()) {
+            return new ResponseEntity<>(new MessageResponse(false, "No Videos...Please upload video"), HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(new VideosListResponse(true, "Success", listPrimeVideo), HttpStatus.OK);
+        }
+    }
 }
