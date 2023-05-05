@@ -134,14 +134,14 @@ public class UserController {
             return userService.logOutUser(userId);
     }
 
-    @GetMapping("/showUserImageByUserId")
-    public String showUserImageByUserId(@RequestParam(name = "userId",required = true)long userId){
-        if(userId>0) {
-            return userService.showUserImageByUserId(userId);
-        }else{
-            return "Provide valid id!!";
-        }
-    }
+//    @GetMapping("/showUserImageByUserId")
+//    public String showUserImageByUserId(@RequestParam(name = "userId",required = true)long userId){
+//        if(userId>0) {
+//            return userService.showUserImageByUserId(userId);
+//        }else{
+//            return "Provide valid id!!";
+//        }
+//    }
 
 
     @PostMapping("/verifyOTP")

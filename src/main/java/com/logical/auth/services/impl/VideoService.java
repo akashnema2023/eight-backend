@@ -91,12 +91,13 @@ public class VideoService {
                             videoData.setLikeStatus(false);
                             videoData.setSubscribeStatus(false);
                             videoData.setUserProfileUrl("");
-                            if(videoType.toString().equals("Private")){
-                                PrimeVideoData primeVideoData=this.modelMapper.map(videoData,PrimeVideoData.class);
-                                primeRepo.save(primeVideoData);
-                            }else {
+//                            if(videoType.toString().equals("Private")){
+//                                PrimeVideoData primeVideoData=this.modelMapper.map(videoData,PrimeVideoData.class);
+//                                primeRepo.save(primeVideoData);
+//                            }else
+//                            {
                                 videoRepository.save(videoData);
-                            }
+//                            }
                             userData.setTotalUploadedVideos((userData.getTotalUploadedVideos()) + 1);
                             userRepository.save(userData);
                             List<SubscribeData> subscribeDataList = subscribeRepo.getListAllSubscriberByUserId(userId);

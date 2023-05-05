@@ -20,7 +20,6 @@ com\logical\auth\model\response\UpdateVideoResponse.class
 com\logical\auth\model\response\ListNotificationResponse.class
 com\logical\auth\repository\UserRepository.class
 com\logical\auth\model\response\VideosListResponse.class
-com\logical\auth\model\Request\CreatePlayListRequest.class
 com\logical\auth\model\response\GetPlayListWithVideosByUserIdResponse.class
 com\logical\auth\model\UpdateUserRequest.class
 com\logical\auth\services\UserService.class
@@ -32,6 +31,7 @@ com\logical\auth\entity\UserData.class
 com\logical\auth\enums\VideoType.class
 com\logical\auth\model\response\ListCategoryResponse.class
 com\logical\auth\model\response\MyDownLoadResponse.class
+com\logical\auth\entity\PrimeVideoData.class
 com\logical\auth\services\FileService.class
 com\logical\auth\services\EmailService.class
 com\logical\auth\repository\LikesRepo.class
@@ -69,6 +69,7 @@ com\logical\auth\repository\PlayListRepo.class
 com\logical\auth\repository\PlayListVideosRepo.class
 com\logical\auth\model\response\SubCategoryResponse.class
 com\logical\auth\model\response\ListVideosByCategoryName2.class
+com\logical\auth\repository\PrimeRepo.class
 com\logical\auth\services\EmailService$1.class
 com\logical\auth\model\response\GetListVideosByCategoryNameResponse.class
 com\logical\auth\services\impl\FileServiceImpl.class

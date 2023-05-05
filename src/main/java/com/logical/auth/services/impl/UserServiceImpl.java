@@ -281,16 +281,16 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-    public String showUserImageByUserId(long userId) {
-        if (userRepository.existsById(userId)) {
-            UserData userData = userRepository.findById(userId).get();
-            String profileImgUrl = userData.getProfileImgUrl();
-            String url = "https://seven02.s3.ap-south-1.amazonaws.com/" + profileImgUrl;
-            return url;
-        } else {
-            return "This user doesn't exits provide valid userid!!";
-        }
-    }
+//    public String showUserImageByUserId(long userId) {
+//        if (userRepository.existsById(userId)) {
+//            UserData userData = userRepository.findById(userId).get();
+//            String profileImgUrl = userData.getProfileImgUrl();
+//            String url = "https://seven02.s3.ap-south-1.amazonaws.com/" + profileImgUrl;
+//            return url;
+//        } else {
+//            return "This user doesn't exits provide valid userid!!";
+//        }
+//    }
 
 
     public ResponseEntity<?> verifyOtp(int otp) {
