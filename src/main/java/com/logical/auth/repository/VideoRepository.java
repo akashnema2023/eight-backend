@@ -18,7 +18,6 @@ public interface VideoRepository extends JpaRepository<VideoData, Integer> {
     public List<VideoData>getVideosByUserId(@RequestParam long userId);
     @Query(value="SELECT * FROM video v2 WHERE v2.category_Id LIKE %?1% and v2.video_type LIKE %?1%", nativeQuery = true)
     public List<VideoData>getVideosByCategoryId(@RequestParam int categoryId);
-
     List<VideoData> findBySubCategoryId(int subCategoryId);
     public List<VideoData> findByUserId(long userId);
 //  @Query(value="SELECT * FROM video v3 WHERE v3.video_title LIKE CONCAT('%',:keyword,'%')",nativeQuery = true)
@@ -28,7 +27,8 @@ public interface VideoRepository extends JpaRepository<VideoData, Integer> {
     @Query(value="SELECT * FROM video v3 WHERE v3.video_title LIKE %?1%",nativeQuery = true)
     public List<VideoData> getListVideosByKeywords(@RequestParam String keyword);
 
-//    @Query(value="SELECT * FROM video v3 WHERE v3.video_type LIKE %?0%",nativeQuery = true)
-//    public List<VideoData> getListVideosByVideoType(@RequestParam VideoType type);
-public List<VideoData>findByCategoryIdAndVideoType(int categoryId,VideoType videoType);
+    @Query(value="SELECT * FROM video v3 WHERE v3.video_type=0",nativeQuery = true)
+    public List<VideoData> getListVideosByVideoType(@RequestParam VideoType type);
+     public List<VideoData>findByCategoryIdAndVideoType(int categoryId,VideoType videoType);
+   // public List<VideoData>findListVideoVideoType(VideoType videoType);
 }

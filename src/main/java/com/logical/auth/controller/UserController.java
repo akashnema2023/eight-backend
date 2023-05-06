@@ -73,6 +73,7 @@ public class UserController {
             return userService.updateUserData(profileImg,backgroundImg,userId,firstName,description);
         }
         catch (Exception e) {
+            logger.error(e.getMessage()+" ");
             logger.info(" "+e);
             return new ResponseEntity<>(new MessageResponse(false,"Something went wrong...Don't very we are figuring out what went wrong...!"),HttpStatus.INTERNAL_SERVER_ERROR);
         }

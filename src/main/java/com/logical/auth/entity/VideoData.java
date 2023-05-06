@@ -38,4 +38,5 @@ public class VideoData {
     public boolean subscribeStatus;
     public String userProfileUrl;
 
+    public long totalSubscriber;
 }

@@ -23,9 +23,11 @@ public class VideoController {
         try {
             return videoService.uploadVideo(videoFile, thumbFile, userId, categoryId, subCategoryId, videoTitle, description, tag, videoType);
         } catch (UncheckedIOException e1) {
+            logger.error(e1.getMessage());
             logger.info("---- " + e1);
             return new ResponseEntity<>(new MessageResponse(false, "Something went wrong...Don't very we are figuring out what went wrong...!"), HttpStatus.INTERNAL_SERVER_ERROR);
         } catch (Exception e) {
+            logger.error(e.getMessage());
             logger.info("-------------" + e);
             return new ResponseEntity<>(new MessageResponse(false, "Something went wrong...!"), HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -45,6 +47,7 @@ public class VideoController {
                 return new ResponseEntity<>(new MessageResponse(false, "Please provide valid userId "), HttpStatus.NOT_ACCEPTABLE);
             }
         } catch (Exception e) {
+            logger.error(e.getMessage());
             logger.info(" " + e);
             return new ResponseEntity<>(new MessageResponse(false, "Something went wrong...!"), HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -58,6 +61,7 @@ public class VideoController {
             //  return videoService.uploadVideo(videoFile, thumbFile,userId,videoId,categoryId,videoTitle,description,tag,videoType);
 
         } catch (Exception e) {
+            logger.error(e.getMessage());
             logger.info(" " + e);
             return new ResponseEntity<>(new MessageResponse(false, "Something went wrong...!"), HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -68,6 +72,7 @@ public class VideoController {
         try {
             return videoService.deleteVideo(videoId);
         } catch (Exception e) {
+            logger.error(e.getMessage());
             logger.info(" " + e);
             return new ResponseEntity<>(new MessageResponse(false, "Something went wrong...!"), HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -78,6 +83,7 @@ public class VideoController {
         try {
             return videoService.getVideoByVideoId(videoId);
         } catch (Exception e) {
+            logger.error(e.getMessage());
             logger.info(" " + e);
             return new ResponseEntity<>(new MessageResponse(false, "Something went wrong...!"), HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -88,6 +94,7 @@ public class VideoController {
         try {
             return videoService.getListVideosByCategoryId(categoryId);
         } catch (Exception e) {
+            logger.error(e.getMessage());
             logger.info(" " + e);
             return new ResponseEntity<>(new MessageResponse(false, "Something went wrong...!"), HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -98,6 +105,7 @@ public class VideoController {
         try {
             return videoService.getListVideosBySubCategoryId(subCategoryId);
         } catch (Exception e) {
+            logger.error(e.getMessage());
             logger.info(" " + e);
             return new ResponseEntity<>(new MessageResponse(false, "Something went wrong...!"), HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -108,6 +116,7 @@ public class VideoController {
         try {
             return videoService.getTotalLikes(videoId, userId);
         } catch (Exception e) {
+            logger.error(e.getMessage());
             logger.info(" " + e);
             return new ResponseEntity<>(new MessageResponse(false, "Something went wrong...!"), HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -118,6 +127,7 @@ public class VideoController {
         try {
             return videoService.getTotalView(videoId, userId);
         } catch (Exception e) {
+            logger.error(e.getMessage());
             logger.info(" " + e);
             return new ResponseEntity<>(new MessageResponse(false, "Something went wrong...!"), HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -128,6 +138,7 @@ public class VideoController {
         try {
             return videoService.getListVideos();
         } catch (Exception e) {
+            logger.error(e.getMessage());
             logger.info(" " + e);
             return new ResponseEntity<>(new MessageResponse(false, "Something went wrong...!"), HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -138,6 +149,7 @@ public class VideoController {
         try {
             return videoService.getMyDownloadVideos(videoId, userId);
         } catch (Exception e) {
+            logger.error(e.getMessage());
             logger.info(" " + e);
             return new ResponseEntity<>(new MessageResponse(false, "Something went wrong...!"), HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -148,16 +160,28 @@ public class VideoController {
         try {
             return videoService.subScribe(userId, subscriberUserId);
         } catch (Exception e) {
+            logger.error(e.getMessage());
             logger.info(" " + e);
             return new ResponseEntity<>(new MessageResponse(false, "Something went wrong...!"), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
+    @GetMapping("/getTotalsubscribe")
+    public ResponseEntity<?> subscribe(@RequestParam(name = "userId", required = true, defaultValue = "0") long userId){
+        try {
+            return videoService.getTotalSubScribe(userId);
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+            logger.info(" " + e);
+            return new ResponseEntity<>(new MessageResponse(false, "Something went wrong...!"), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
     @GetMapping("/addVideoInHistory")
     public ResponseEntity<?> addVideoInHistory(@RequestParam(name = "videoId", required = true, defaultValue = "0") int videoId, @RequestParam(name = "userId", required = true, defaultValue = "0") long userId) {
         try {
             return videoService.getHistoryVideos(videoId, userId);
         } catch (Exception e) {
+            logger.error(e.getMessage());
             logger.info(" " + e);
             return new ResponseEntity<>(new MessageResponse(false, "Something went wrong...!"), HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -168,6 +192,7 @@ public class VideoController {
         try {
             return videoService.deleteVideoFromHistory(videoId, userId);
         } catch (Exception e) {
+            logger.error(e.getMessage());
             logger.info(" " + e);
             return new ResponseEntity<>(new MessageResponse(false, "Something went wrong...!"), HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -178,22 +203,22 @@ public class VideoController {
         try {
             return videoService.getListMyHistory(userId);
         } catch (Exception e) {
+            logger.error(e.getMessage());
             logger.info(" " + e);
             return new ResponseEntity<>(new MessageResponse(false, "Something went wrong...!"), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
-//    @GetMapping("/getListVideosAccordingCategoryName")
-//    public ResponseEntity<?> getListVideosAccordingCategoryName() {
-//        try {
-//            return videoService.getListVideosByCategory();
-////            return videoService.getVideoAccordingToCategory1();
-//
-//        } catch (Exception e) {
-//            logger.info(" " + e);
-//            return new ResponseEntity<>(new MessageResponse(false, "Something went wrong...!"), HttpStatus.INTERNAL_SERVER_ERROR);
-//        }
-//    }
+    @GetMapping("/getListVideosAccordingCategoryNameResponse")
+    public ResponseEntity<?> getListVideosAccordingCategoryName() {
+        try {
+            return videoService.getListVideosByCategory();
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+            logger.info(" " + e);
+            return new ResponseEntity<>(new MessageResponse(false, "Something went wrong...!"), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 
     @GetMapping("/getListVideosLikesByUser")
     public ResponseEntity<?> getListVideosLikesByUser(@RequestParam(name = "userId") long userId) {
@@ -201,6 +226,7 @@ public class VideoController {
             ResponseEntity<?> videoLikesByUserId = videoService.getVideoLikesByUserId(userId);
             return videoLikesByUserId;
         } catch (Exception e) {
+            logger.error(e.getMessage());
             logger.info(" " + e);
             return new ResponseEntity<>(new MessageResponse(false, "Something went wrong...!"), HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -211,6 +237,7 @@ public class VideoController {
         try {
             return videoService.getListTrendingVideos(sort);
         } catch (Exception e) {
+            logger.error(e.getMessage());
             logger.info(" " + e);
             return new ResponseEntity<>(new MessageResponse(false, "Something went wrong...!"), HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -221,6 +248,7 @@ public class VideoController {
         try {
             return videoService.getAboutUs();
         } catch (Exception e) {
+            logger.error(e.getMessage());
             logger.info(" " + e);
             return new ResponseEntity<>(new MessageResponse(false, "Something went wrong...!"), HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -231,6 +259,7 @@ public class VideoController {
         try {
             return videoService.getListVideosByKeyword(keyword);
         } catch (Exception e) {
+            logger.error(e.getMessage());
             logger.info(" " + e);
             return new ResponseEntity<>(new MessageResponse(false, "Something went wrong...!"), HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -242,6 +271,7 @@ public class VideoController {
             return videoService.getListVideosByexplores();
             //return videoService.getListVideosByexplore();
         } catch (Exception e) {
+            logger.error(e.getMessage());
             logger.info(" " + e);
             return new ResponseEntity<>(new MessageResponse(false, "Something went wrong...!"), HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -252,6 +282,7 @@ public class VideoController {
         try {
             return videoService.getListNotificationByUserId(userId);
         } catch (Exception e) {
+            logger.error(e.getMessage());
             logger.info(" " + e);
             return new ResponseEntity<>(new MessageResponse(false, "Something went wrong...!"), HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -273,12 +304,18 @@ public class VideoController {
 //            return videoService.getVideoAccordingToCategory1();
 
         }catch (Exception e) {
+            logger.error(e.getMessage());
             logger.info(" "+e);
             return new ResponseEntity<>(new MessageResponse( false,"Something went wrong...!"), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-  @GetMapping("/prime")
-   public ResponseEntity<?> ListVideosByType(){
+    @GetMapping("/getListPrimeVideo")
+    public ResponseEntity<?>getListPrimeVideo(){
         return videoService.getListPrimeVideo();
     }
+    @GetMapping("/getListPrimeVideoAccordingCategoryName")
+    public ResponseEntity<?> getListPrimeVideoAccordingCategoryName(){
+        return videoService.getListPrimeVideoByCategoryName();
+    }
+
 }
