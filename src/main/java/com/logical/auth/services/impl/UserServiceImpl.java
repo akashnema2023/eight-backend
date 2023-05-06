@@ -143,15 +143,18 @@ public class UserServiceImpl implements UserService {
                     // userData.setProfileImgUrl("");
                     updateUserResponse.setProfileImgUrl(userData.getProfileImgUrl());
                 }
-                if (firstName == null) {
-                    //  userData.setFirstName(firstName);
+                if (firstName.isEmpty() || firstName.isBlank()) {
                     updateUserResponse.setFirstName(userData.getFirstName());
                 } else {
                     userData.setFirstName(firstName);
                     updateUserResponse.setFirstName(userData.getFirstName());
                 }
-                userData.setDescription(description);
-                updateUserResponse.setDescription(userData.getDescription());
+                if (description.isEmpty() || description.isBlank()) {
+                    updateUserResponse.setDescription(userData.getDescription());
+                } else {
+                    userData.setDescription(description);
+                    updateUserResponse.setDescription(userData.getDescription());
+                }
                 userRepository.save(userData);
                 //  UpdateUserResponse updateUserResponse = this.modelMapper.map(updateUserRequest, UpdateUserResponse.class);
                 //  updateUserResponse.setProfileImgUrl(userData.getProfileImgUrl());
