@@ -509,6 +509,23 @@ public class VideoService {
             return new ResponseEntity<>(new MessageResponse(false, "Please provide valid userId "), HttpStatus.NOT_ACCEPTABLE);
         }
     }
+    public ResponseEntity<?> getTotalSubScribe(long userId){
+        if (userId > 0) {
+            if (userRepository.existsById(userId)) {
+                List<SubscribeData>subscribeDataList=subscribeRepo.getListAllSubscriberByUserId(userId);
+                UserData userData=userRepository.findById(userId).get();
+                if(subscribeDataList.isEmpty()){
+                    return new ResponseEntity<>(new GetTotalSubscriberResponse(true,"Success",0), HttpStatus.NOT_FOUND);
+                }else{
+                    return new ResponseEntity<>(new GetTotalSubscriberResponse(true,"Success",userData.getTotalSubscriber()), HttpStatus.NOT_FOUND);
+                }
+            } else {
+                return new ResponseEntity<>(new MessageResponse(false, "User does not exist with this UserId...!"), HttpStatus.NOT_FOUND);
+            }
+        } else {
+            return new ResponseEntity<>(new MessageResponse(false, "Please provide valid userId "), HttpStatus.NOT_ACCEPTABLE);
+        }
+    }
     public ResponseEntity<?> getHistoryVideos(int videoId, long userId) {
         if (videoId > 0) {
             if (userId > 0) {
